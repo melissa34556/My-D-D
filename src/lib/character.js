@@ -6,7 +6,7 @@ export function createCharacter(overrides = {}) {
     abilities: {STR:10,DEX:10,CON:10,INT:10,WIS:10,CHA:10}, proficiencyBonus:2,
     savingThrows:[], skillProficiencies:[], armorClass:10, initiative:0, speed:30,
     hitPoints:{current:8,maximum:8,temporary:0}, hitDice:"1d8", deathSaves:{successes:0,failures:0},
-    attacks:[], spellcasting:{ability:"",saveDC:0,attackBonus:0,slots:{},spells:[]},
+    attacks:[], actions:[], spellcasting:{ability:"",saveDC:0,attackBonus:0,slots:{},spells:[]},
     inventory:[], currency:{cp:0,sp:0,ep:0,gp:0,pp:0}, inspiration:{current:0,history:[]}, features:[],traits:[],resources:[],conditions:[],notes:"",
     importMetadata:null,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()
   };
@@ -14,7 +14,7 @@ export function createCharacter(overrides = {}) {
 }
 export function normalizeCharacter(input={}) {
   const c=createCharacter(input); c.ruleset="5e-2014"; c.id=input.id||c.id; c.updatedAt=new Date().toISOString();
-  for(const k of ["savingThrows","skillProficiencies","attacks","inventory","features","traits","resources","conditions"]) if(!Array.isArray(c[k])) c[k]=[];
+  for(const k of ["savingThrows","skillProficiencies","attacks","actions","inventory","features","traits","resources","conditions"]) if(!Array.isArray(c[k])) c[k]=[];
   if(!Array.isArray(c.spellcasting.spells)) c.spellcasting.spells=[];
   return c;
 }
