@@ -22,7 +22,7 @@ Niet in scope: 2024-regels, multiplayer, campagne-samenwerking, gedeelde logs/in
 ## Imports
 - My D&D JSON backup/import.
 - Invulbare PDF-formuliervelden uitlezen met pdf-lib; bedoeld als eerste importpad voor de officiële D&D Beyond 2014 character-sheet PDF.
-- Aurora character files gebruiken de extensie `.dnd5e`. De importer probeert eerst JSON en daarna XML te lezen, met een conservatieve eerste veldmapping. De mapping moet nog met een echt Aurora-characterbestand worden gevalideerd.
+- Aurora Builder `.dnd5e`-bestanden worden als XML ingelezen. De importer haalt onder meer naam, species, multiclass-verdeling, subclass, level, ability scores, skill- en saving throw-proficiencies, equipment, currency, attacks, spells/spell slots, features, talen en backstory op. Afgeleide/ontbrekende velden zoals HP worden niet verzonnen; de import toont waarschuwingen. Portraitbestanden die alleen als lokaal pad in Aurora staan, worden niet meegenomen. De importer is getest op de structuur van een aangeleverd Aurora 1.0.3-bestand, maar moet nog in de browser/app zelf worden gevalideerd.
 - D&D Beyond URL-import is nog niet geactiveerd. Een volledige URL-import vraagt een server-side connector/proxy; de browser heeft geen betrouwbare cross-origin toegang tot D&D Beyond. De onofficiële route is niet gegarandeerd.
 
 Bronvelden die uit PDF/Aurora-bestanden worden gelezen, blijven als importmetadata bij het character bewaard om de mapping later te verbeteren. Controleer de import altijd.
