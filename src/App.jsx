@@ -5,8 +5,9 @@ const KEY="my-dd-library-v2",ABILITIES=["STR","DEX","CON","INT","WIS","CHA"];
 const TABS=["Overview","Abilities","Combat","Spells","Inventory","Features","Notes"];
 const mod=n=>Math.floor((Number(n||10)-10)/2),signed=n=>n>=0?"+"+n:String(n);
 function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||"null");if(Array.isArray(x))return x.map(normalizeCharacter);}catch{}try{const old=JSON.parse(localStorage.getItem("my-dd-character")||"null");if(old)return [normalizeCharacter(old)];}catch{}return [createCharacter({name:"Aelindra Moonwhisper",species:"Half-Elf",className:"Ranger",subclass:"Gloom Stalker",level:5,background:"Outlander",abilities:{STR:12,DEX:18,CON:14,INT:10,WIS:16,CHA:13},armorClass:16,speed:35,proficiencyBonus:3,hitPoints:{current:37,maximum:44,temporary:0},skillProficiencies:["Perception","Stealth","Survival","Athletics"],features:["Favored Enemy","Deft Explorer","Extra Attack","Dread Ambusher"]})];}
+const INITIAL_LIBRARY=load();
 export default function App(){
- const [list,setList]=useState(load),[id,setId]=useState(()=>load()[0]?.id),[tab,setTab]=useState("Overview"),[last,setLast]=useState(null),[history,setHistory]=useState([]),[review,setReview]=useState(null),[notice,setNotice]=useState("");
+ const [list,setList]=useState(INITIAL_LIBRARY),[id,setId]=useState(INITIAL_LIBRARY[0]?.id),[tab,setTab]=useState("Overview"),[last,setLast]=useState(null),[history,setHistory]=useState([]),[review,setReview]=useState(null),[notice,setNotice]=useState("");
  const file=useRef(null),c=list.find(x=>x.id===id)||list[0];
  useEffect(()=>localStorage.setItem(KEY,JSON.stringify(list)),[list]);
  useEffect(()=>{if(!id&&list[0])setId(list[0].id)},[id,list]);
