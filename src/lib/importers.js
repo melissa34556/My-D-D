@@ -57,8 +57,9 @@ function importXML(xml,filename) {
   const classCounts={};
   for(const lv of levelNodes){const id=lv.getAttribute("class");let cls=lv.getAttribute("multiclass")==="true"?id?.match(/MULTICLASS_([A-Z_]+)$/)?.[1]:classId.match(/CLASS_([A-Z_]+)$/)?.[1];if(cls){cls=cls.replace(/_/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());classCounts[cls]=(classCounts[cls]||0)+1;}}
   const classSummary=Object.entries(classCounts).map(([k,v])=>k+" "+v).join(" / ")||val(display,"class")||className;
-  const subclassId=sum.find(x=>x.getAttribute("type")==="Archetype")?.getAttribute("id")||"";
-  const subclass=(subclassId.replace(/^.*ARCHETYPE_[A-Z0-9]+_/,"").replace(/_/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase()));
+  const subclassIds=sum.filter(x=>x.getAttribute("type")==="Archetype").map(x=>x.getAttribute("id")||"");
+  const subclasses=[...new Set(subclassIds.map(id=>id.replace(/^.*ARCHETYPE_[A-Z0-9]+_/,"").replace(/_/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase())).filter(Boolean))];
+  const subclass=subclasses[0]||"";
   const equipment=[...build.querySelectorAll(":scope > equipment > item")].filter(x=>x.getAttribute("hidden")!=="true").map(x=>({name:x.getAttribute("name")||"Unknown item",quantity:Number(x.getAttribute("amount")||1),sourceId:x.getAttribute("id")||"",identifier:x.getAttribute("identifier")||"",equipped:x.getAttribute("equipped")==="true"}));
   const attacks=[...input.querySelectorAll("attacks > attack")].map(x=>({name:x.getAttribute("name")||"Attack",range:x.getAttribute("range")||"",attackBonus:Number((x.getAttribute("attack")||"").match(/[+-]?\d+/)?.[0]||0),damage:(x.getAttribute("damage")||"").split(" ")[0]||"1d6",damageType:(x.getAttribute("damage")||"").replace(/^[^ ]+\s*/,""),description:x.textContent||""}));
   const spellcasting=[...build.querySelectorAll(":scope > magic > spellcasting")].map(sc=>{
@@ -87,7 +88,7 @@ function importXML(xml,filename) {
   else if(armorNames.some(x=>x.includes("plate"))) armorClass=18;
   if(armorNames.some(x=>x==="shield")) armorClass+=2;
   const character=normalizeCharacter({
-    name,species:val(display,"race"),className:classSummary||mainClass,subclass:subclass||val(display,"archetype"),level:num(display,"level",levelNodes.length||1),background,
+    name,species:val(display,"race"),className:classSummary||mainClass,subclass:subclass||val(display,"archetype"),subclasses,level:num(display,"level",levelNodes.length||1),background,
     abilities,proficiencyBonus:Math.ceil(num(display,"level",1)/4)+1,
     savingThrows,skillProficiencies,armorClass,initiative:dexMod,speed:30,
     hitPoints:{current:0,maximum:0,temporary:0},hitDiceByClass:Object.fromEntries(Object.entries(classCounts).map(([cls,total])=>[cls,{size:({"Barbarian":12,"Fighter":10,"Paladin":10,"Ranger":10,"Bard":8,"Cleric":8,"Druid":8,"Monk":8,"Rogue":8,"Warlock":8,"Sorcerer":6,"Wizard":6}[cls]||8),total,used:0}])),
