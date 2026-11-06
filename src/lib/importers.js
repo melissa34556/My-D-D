@@ -23,15 +23,57 @@ async function importPDF(file) {
 function importAurora(sourceText,filename) {\n  try { const parsed=JSON.parse(sourceText); const mapped=mapAuroraJSON(parsed,filename); if(mapped) return mapped; } catch {}\n  return importXML(sourceText,filename);\n}\nfunction mapAuroraJSON(data,filename) {\n  const entries=[]; const walk=(v,path="")=>{if(!v||typeof v!=="object")return; for(const [k,x] of Object.entries(v)){entries.push([k.toLowerCase().replace(/[^a-z0-9]/g,""),x,path]); if(x&&typeof x==="object")walk(x,path+"/"+k);}}; walk(data);\n  const pick=(...keys)=>{for(const k of keys){const hit=entries.find(e=>e[0]===k&&["string","number"].includes(typeof e[1]));if(hit&&String(hit[1]).trim())return hit[1];}return "";};\n  const name=pick("charactername","name","charname"); if(!name)return null;\n  const abilities={}; for(const a of ["str","dex","con","int","wis","cha"]){const n=Number(pick(a,a+"score",a+"total"));if(n>0)abilities[a.toUpperCase()]=n;}\n  const character=normalizeCharacter({name:String(name),species:String(pick("race","species","racename")||""),className:String(pick("classname","class")||""),level:Number(pick("totallevel","level"))||1,background:String(pick("background")||""),abilities,importMetadata:{source:filename,importedAt:new Date().toISOString(),rawData:data}});\n  return {character,warnings:["Aurora .dnd5e JSON-import is voorlopig een generieke eerste mapping. Controleer alle velden; onbekende data blijft in de importmetadata bewaard."]};\n}\nfunction importXML(xml,filename) {
   const doc=new DOMParser().parseFromString(xml,"application/xml");
   if(doc.querySelector("parsererror")) throw new Error("Aurora-bestand kon niet als XML worden gelezen.");
-  const raw={};
-  for(const node of [...doc.querySelectorAll("*")]) {
-    if(node.children.length===0&&clean(node.textContent)) raw[node.getAttribute("name")||node.getAttribute("key")||node.tagName]=clean(node.textContent);
-    if(node.hasAttribute("value")&&clean(node.getAttribute("value"))) raw[node.getAttribute("name")||node.getAttribute("key")||node.tagName]=clean(node.getAttribute("value"));
-  }
-  const flat=Object.fromEntries(Object.entries(raw).map(([k,v])=>[k.toLowerCase().replace(/[^a-z0-9]/g,""),v]));
-  const pick=(...ks)=>{for(const k of ks)if(flat[k])return flat[k];return "";};
-  const name=pick("charactername","name","charname");
-  if(!name) throw new Error("Geen characternaam herkend. Aurora-exportformaat nog niet ondersteund.");
-  const abilities={};for(const a of ["str","dex","con","int","wis","cha"]){const v=Number(pick(a,a+"score",a+"total"));if(v>0)abilities[a.toUpperCase()]=v;}
-  return {character:normalizeCharacter({name,species:pick("race","species","racename"),className:pick("class","classname"),level:Number(pick("totallevel","level"))||1,background:pick("background"),abilities,importMetadata:{source:filename,importedAt:new Date().toISOString(),rawFields:raw}}),warnings:["Aurora-exportbestanden verschillen per versie. Dit is een experimentele uitlezing; controleer de gegevens.","Alle gevonden bronvelden zijn bewaard, ook als ze nog niet gemapt zijn."]};
+  const root=doc.documentElement, build=root.querySelector(":scope > build");
+  if(root.tagName!=="character"||!build) throw new Error("Dit XML-bestand lijkt geen Aurora character-export te zijn.");
+  const text=(parent,selector)=>clean(parent?.querySelector(selector)?.textContent);
+  const input=build.querySelector(":scope > input"), display=root.querySelector(":scope > display-properties");
+  const val=(parent,tag)=>text(parent,tag);
+  const num=(parent,tag,fallback=0)=>{const n=Number(val(parent,tag));return Number.isFinite(n)&&val(parent,tag)!==""?n:fallback;};
+  const name=val(input,"name")||val(display,"name");
+  if(!name) throw new Error("Geen characternaam gevonden in het Aurora-bestand.");
+  const abilities={};
+  const abilityNode=build.querySelector(":scope > abilities");
+  for(const [key,tag] of [["STR","strength"],["DEX","dexterity"],["CON","constitution"],["INT","intelligence"],["WIS","wisdom"],["CHA","charisma"]]) abilities[key]=num(abilityNode,tag,10);
+  const sum=[...build.querySelectorAll(":scope > sum > element")];
+  const profIds=sum.filter(x=>x.getAttribute("type")==="Proficiency").map(x=>x.getAttribute("id")||"");
+  const skillNames=["Acrobatics","Animal Handling","Arcana","Athletics","Deception","History","Insight","Intimidation","Investigation","Medicine","Nature","Perception","Performance","Persuasion","Religion","Sleight of Hand","Stealth","Survival"];
+  const skillProficiencies=[...new Set(profIds.flatMap(id=>{const m=id.match(/ID_PROFICIENCY_SKILL_([A-Z_]+)$/);if(!m)return[];const found=skillNames.find(s=>s.toUpperCase().replace(/ /g,"_")===m[1]);return found?[found]:[];}))];
+  const savingThrows=profIds.map(id=>{const m=id.match(/ID_PROFICIENCY_SAVINGTHROW_(STRENGTH|DEXTERITY|CONSTITUTION|INTELLIGENCE|WISDOM|CHARISMA)$/);return m?m[1]:"";}).filter(Boolean);
+  const levelNodes=[...build.querySelectorAll(":scope > elements > element[type='Level']")];
+  const classId=levelNodes.find(x=>x.getAttribute("multiclass")!=="true")?.getAttribute("class")||sum.find(x=>x.getAttribute("type")==="Class")?.getAttribute("id")||"";
+  const className=(classId.match(/CLASS_([A-Z_]+)$/)?.[1]||"").replace(/_/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());
+  const classCounts={};
+  for(const lv of levelNodes){const id=lv.getAttribute("class");let cls=id?.match(/MULTICLASS_([A-Z_]+)$/)?.[1];if(!cls)cls=classId.match(/CLASS_([A-Z_]+)$/)?.[1];if(cls){cls=cls.replace(/_/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());classCounts[cls]=(classCounts[cls]||0)+1;}}
+  const classSummary=Object.entries(classCounts).map(([k,v])=>k+" "+v).join(" / ")||val(display,"class")||className;
+  const subclassId=sum.find(x=>x.getAttribute("type")==="Archetype")?.getAttribute("id")||"";
+  const subclass=(subclassId.match(/ARCHETYPE_[A-Z_]+_([A-Z_]+)$/)?.[1]||"").replace(/_/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());
+  const equipment=[...build.querySelectorAll(":scope > equipment > item")].filter(x=>x.getAttribute("hidden")!=="true").map(x=>({name:x.getAttribute("name")||"Unknown item",quantity:Number(x.getAttribute("amount")||1),sourceId:x.getAttribute("id")||"",identifier:x.getAttribute("identifier")||"",equipped:x.getAttribute("equipped")==="true"}));
+  const attacks=[...input.querySelectorAll("attacks > attack")].map(x=>({name:x.getAttribute("name")||"Attack",range:x.getAttribute("range")||"",attackBonus:Number((x.getAttribute("attack")||"").match(/[+-]?\d+/)?.[0]||0),damage:(x.getAttribute("damage")||"").split(" ")[0]||"1d6",damageType:(x.getAttribute("damage")||"").replace(/^[^ ]+\s*/,""),description:x.textContent||""}));
+  const spellcasting=[...build.querySelectorAll(":scope > magic > spellcasting")].map(sc=>{
+    const slotsNode=sc.querySelector("slots"), slots={};
+    if(slotsNode) for(let i=1;i<=9;i++){const total=Number(slotsNode.getAttribute("s"+i)||0);if(total)slots[i]={total,used:0};}
+    const spells=[...sc.querySelectorAll("cantrips > spell, spells > spell")].map(sp=>({name:sp.getAttribute("name")||"Unknown spell",level:Number(sp.getAttribute("level")||0),prepared:sp.getAttribute("prepared")==="true",known:sp.getAttribute("known")==="true",sourceId:sp.getAttribute("id")||""}));
+    return {name:sc.getAttribute("name")||"",ability:sc.getAttribute("ability")||"",attackBonus:Number(sc.getAttribute("attack")||0),saveDC:Number(sc.getAttribute("dc")||0),slots,spells};
+  });
+  const currencyNode=input.querySelector("currency"), currency={cp:num(currencyNode,"copper"),sp:num(currencyNode,"silver"),ep:num(currencyNode,"electrum"),gp:num(currencyNode,"gold"),pp:num(currencyNode,"platinum")};
+  const background=val(display,"background")||sum.find(x=>x.getAttribute("type")==="Background")?.getAttribute("id")?.replace(/^ID_BACKGROUND_/,"").replace(/_/g," ")||"";
+  const features=[...new Set(sum.filter(x=>["Racial Trait","Background Feature","Feat","Class Feature","Archetype Feature"].includes(x.getAttribute("type"))).map(x=>(x.getAttribute("id")||"").replace(/^ID_[A-Z0-9_]+_(?:RACIAL_TRAIT|BACKGROUND_FEATURE|FEAT|CLASS_FEATURE|ARCHETYPE_FEATURE)_/,"").replace(/_/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase())).filter(Boolean))];
+  const languages=sum.filter(x=>x.getAttribute("type")==="Language").map(x=>(x.getAttribute("id")||"").replace(/^ID_[A-Z0-9_]+_LANGUAGE_/,"").replace(/_/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase()));
+  const traits=[...new Set(languages)];
+  const backstory=val(input,"backstory"), appearance=build.querySelector(":scope > appearance");
+  const nameParts=classSummary.split(" / ");
+  const mainClass=nameParts[0]?.replace(/ \d+$/,"")||className;
+  const hpWarning="Aurora-export bevat in dit bestand geen expliciete actuele/maximale HP-velden. HP is daarom niet gegokt en moet na import worden ingevuld.";
+  const character=normalizeCharacter({
+    name,species:val(display,"race"),className:mainClass,subclass:subclass||val(display,"archetype"),level:num(display,"level",levelNodes.length||1),background,
+    abilities,proficiencyBonus:Math.ceil(num(display,"level",1)/4)+1,
+    savingThrows,skillProficiencies,armorClass:0,initiative:0,speed:30,
+    hitPoints:{current:0,maximum:0,temporary:0},
+    attacks,spellcasting:{ability:spellcasting[0]?.ability||"",saveDC:spellcasting[0]?.saveDC||0,attackBonus:spellcasting[0]?.attackBonus||0,slots:Object.assign({},...spellcasting.map(x=>x.slots)),spells:spellcasting.flatMap(x=>x.spells.map(sp=>({...sp,spellcastingClass:x.name})))},
+    inventory:equipment,currency,features,traits,notes:[backstory,val(input,"notes"),val(input,"additional-features")].filter(Boolean).join("\n\n"),
+    importMetadata:{source:filename,format:"Aurora Builder .dnd5e XML",auroraVersion:root.getAttribute("version")||"",importedAt:new Date().toISOString(),classBreakdown:classCounts,spellcasting,sourceElementIds:sum.map(x=>({type:x.getAttribute("type"),id:x.getAttribute("id")})),appearance:{age:val(appearance,"age"),height:val(appearance,"height"),weight:val(appearance,"weight"),eyes:val(appearance,"eyes"),skin:val(appearance,"skin"),hair:val(appearance,"hair")},playerName:val(input,"player-name"),experience:num(input,"experience"),gender:val(input,"gender"),languages}
+  });
+  const warnings=[hpWarning,"Controleer de klasseverdeling en vaardigheids-/saving throw-proficiencies. Aurora bewaart sommige afgeleide waarden als bron-ID's.","De portrait-afbeelding is niet geïmporteerd; Aurora kan deze als lokaal bestandspad opslaan dat op een ander apparaat niet geldig is."];
+  if(spellcasting.length>1) warnings.push("Meerdere spellcasting-klassen zijn samengevoegd in één spellbook. De oorspronkelijke spellcasting-profielen zijn bewaard in importmetadata.");
+  return {character,warnings};
 }
