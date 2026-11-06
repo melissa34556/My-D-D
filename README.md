@@ -11,7 +11,10 @@ Build: `npm run build`.
 
 ## Scope
 - Meerdere characters beheren, aanmaken, verwijderen en exporteren.
-- Character sheet, ability scores, skills, combat, hit points, death saves, conditions, spells, inventory, currency, features en notes.
+- Character play met ability scores, skills (inclusief vastgezette skills), combat, hit points, death saves, conditions, rests, spells, inventory, currency, features en notes.
+- Afzonderlijk spellbook met zoekfunctie en filters voor level, class, school, bronboek en character. Character-spells worden automatisch opgenomen in het overzicht.
+- Printbare character sheet-weergave.
+- Eerste algemene Library-navigatie voor toekomstige contentcategorieën.
 - Dice roller en lokale roll history.
 - Lokale opslag zonder account of server.
 - Import review voordat een character wordt opgeslagen.
