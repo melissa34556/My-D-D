@@ -55,7 +55,7 @@ function importXML(xml,filename) {
   const classId=levelNodes.find(x=>x.getAttribute("multiclass")!=="true")?.getAttribute("class")||sum.find(x=>x.getAttribute("type")==="Class")?.getAttribute("id")||"";
   const className=(classId.match(/CLASS_([A-Z_]+)$/)?.[1]||"").replace(/_/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());
   const classCounts={};
-  for(const lv of levelNodes){const id=lv.getAttribute("class");let cls=id?.match(/MULTICLASS_([A-Z_]+)$/)?.[1];if(!cls)cls=classId.match(/CLASS_([A-Z_]+)$/)?.[1];if(cls){cls=cls.replace(/_/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());classCounts[cls]=(classCounts[cls]||0)+1;}}
+  for(const lv of levelNodes){const id=lv.getAttribute("class");let cls=lv.getAttribute("multiclass")==="true"?id?.match(/MULTICLASS_([A-Z_]+)$/)?.[1]:classId.match(/CLASS_([A-Z_]+)$/)?.[1];if(cls){cls=cls.replace(/_/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());classCounts[cls]=(classCounts[cls]||0)+1;}}
   const classSummary=Object.entries(classCounts).map(([k,v])=>k+" "+v).join(" / ")||val(display,"class")||className;
   const subclassId=sum.find(x=>x.getAttribute("type")==="Archetype")?.getAttribute("id")||"";
   const subclass=(subclassId.replace(/^.*ARCHETYPE_[A-Z0-9]+_/,"").replace(/_/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase()));
