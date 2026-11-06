@@ -46,7 +46,7 @@ function importAurora(sourceText,filename) {\n  try { const parsed=JSON.parse(so
   for(const lv of levelNodes){const id=lv.getAttribute("class");let cls=id?.match(/MULTICLASS_([A-Z_]+)$/)?.[1];if(!cls)cls=classId.match(/CLASS_([A-Z_]+)$/)?.[1];if(cls){cls=cls.replace(/_/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());classCounts[cls]=(classCounts[cls]||0)+1;}}
   const classSummary=Object.entries(classCounts).map(([k,v])=>k+" "+v).join(" / ")||val(display,"class")||className;
   const subclassId=sum.find(x=>x.getAttribute("type")==="Archetype")?.getAttribute("id")||"";
-  const subclass=(subclassId.match(/ARCHETYPE_[A-Z_]+_([A-Z_]+)$/)?.[1]||"").replace(/_/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());
+  const subclass=(subclassId.replace(/^.*ARCHETYPE_[A-Z0-9]+_/,"").replace(/_/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase()));
   const equipment=[...build.querySelectorAll(":scope > equipment > item")].filter(x=>x.getAttribute("hidden")!=="true").map(x=>({name:x.getAttribute("name")||"Unknown item",quantity:Number(x.getAttribute("amount")||1),sourceId:x.getAttribute("id")||"",identifier:x.getAttribute("identifier")||"",equipped:x.getAttribute("equipped")==="true"}));
   const attacks=[...input.querySelectorAll("attacks > attack")].map(x=>({name:x.getAttribute("name")||"Attack",range:x.getAttribute("range")||"",attackBonus:Number((x.getAttribute("attack")||"").match(/[+-]?\d+/)?.[0]||0),damage:(x.getAttribute("damage")||"").split(" ")[0]||"1d6",damageType:(x.getAttribute("damage")||"").replace(/^[^ ]+\s*/,""),description:x.textContent||""}));
   const spellcasting=[...build.querySelectorAll(":scope > magic > spellcasting")].map(sc=>{
@@ -75,7 +75,7 @@ function importAurora(sourceText,filename) {\n  try { const parsed=JSON.parse(so
   else if(armorNames.some(x=>x.includes("plate"))) armorClass=18;
   if(armorNames.some(x=>x==="shield")) armorClass+=2;
   const character=normalizeCharacter({
-    name,species:val(display,"race"),className:mainClass,subclass:subclass||val(display,"archetype"),level:num(display,"level",levelNodes.length||1),background,
+    name,species:val(display,"race"),className:classSummary||mainClass,subclass:subclass||val(display,"archetype"),level:num(display,"level",levelNodes.length||1),background,
     abilities,proficiencyBonus:Math.ceil(num(display,"level",1)/4)+1,
     savingThrows,skillProficiencies,armorClass,initiative:dexMod,speed:30,
     hitPoints:{current:0,maximum:0,temporary:0},
