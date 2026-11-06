@@ -5,7 +5,7 @@ export function createCharacter(overrides = {}) {
     name: "Nieuw character", species: "", className: "", subclass: "", level: 1, background: "",
     abilities: {STR:10,DEX:10,CON:10,INT:10,WIS:10,CHA:10}, proficiencyBonus:2,
     savingThrows:[], skillProficiencies:[], armorClass:10, initiative:0, speed:30,
-    hitPoints:{current:8,maximum:8,temporary:0}, hitDice:"1d8", hitDiceUsed:0, deathSaves:{successes:0,failures:0},
+    hitPoints:{current:8,maximum:8,temporary:0}, hitDice:"1d8", hitDiceUsed:0, hitDiceByClass:{}, deathSaves:{successes:0,failures:0},
     attacks:[], actions:[], spellcasting:{ability:"",saveDC:0,attackBonus:0,slots:{},spells:[]},
     inventory:[], currency:{cp:0,sp:0,ep:0,gp:0,pp:0}, inspiration:{current:0,history:[]}, features:[],traits:[],resources:[],conditions:[],notes:"",
     importMetadata:null,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()
