@@ -8,7 +8,7 @@ export default function SpellLibrary({characters=[]}){
  const [search,setSearch]=useState(""),[level,setLevel]=useState("all"),[klass,setKlass]=useState("All classes"),[school,setSchool]=useState("All schools"),[source,setSource]=useState("All sources"),[character,setCharacter]=useState("all"),[showAdd,setShowAdd]=useState(false),[selected,setSelected]=useState(null);
  const all=useMemo(()=>{
   const rows=[...catalog.map(x=>({...x,origin:"Library"}))];
-  characters.forEach(c=>(c.spellcasting?.spells||[]).forEach(s=>rows.push({...s,level:Number(s.level||0),characterName:c.name,origin:"Character"})));
+  characters.forEach(c=>(c.spellcasting?.spells||[]).forEach(s=>rows.push({...s,level:Number(s.level||0),classes:s.classes||[c.className].filter(Boolean),characterName:c.name,origin:"Character"})));
   const seen=new Set();return rows.filter(s=>{const key=[s.name?.toLowerCase(),s.characterName||"",s.source||""].join("|");if(seen.has(key))return false;seen.add(key);return true});
  },[catalog,characters]);
  const sources=["All sources",...new Set(all.map(s=>s.source).filter(Boolean))];
