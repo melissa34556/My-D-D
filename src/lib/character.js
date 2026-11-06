@@ -2,7 +2,7 @@ export const SCHEMA_VERSION = 1;
 export function createCharacter(overrides = {}) {
   const base = {
     id: crypto.randomUUID?.() ?? String(Date.now()), schemaVersion: SCHEMA_VERSION, ruleset: "5e-2014",
-    name: "Nieuw character", species: "", className: "", subclass: "", level: 1, background: "",
+    name: "Nieuw character", species: "", className: "", subclass: "", subclasses:[], level: 1, background: "",
     abilities: {STR:10,DEX:10,CON:10,INT:10,WIS:10,CHA:10}, proficiencyBonus:2,
     savingThrows:[], skillProficiencies:[], armorClass:10, initiative:0, speed:30,
     hitPoints:{current:8,maximum:8,temporary:0}, hitDice:"1d8", hitDiceUsed:0, hitDiceByClass:{}, deathSaves:{successes:0,failures:0},
@@ -14,8 +14,8 @@ export function createCharacter(overrides = {}) {
 }
 export function normalizeCharacter(input={}) {
   const c=createCharacter(input); c.ruleset="5e-2014"; c.id=input.id||c.id; c.updatedAt=new Date().toISOString();
-  for(const k of ["savingThrows","skillProficiencies","attacks","actions","inventory","features","traits","resources","conditions"]) if(!Array.isArray(c[k])) c[k]=[];
-  if(!Array.isArray(c.spellcasting.spells)) c.spellcasting.spells=[];
+  for(const k of ["savingThrows","skillProficiencies","attacks","actions","inventory","features","traits","resources","conditions","subclasses"]) if(!Array.isArray(c[k])) c[k]=[];
+  if(!Array.isArray(c.spellcasting.spells)) c.spellcasting.spells=[]; if(!Array.isArray(c.spellcastingProfiles)) c.spellcastingProfiles=[];
   return c;
 }
 export function exportCharacter(character) {
