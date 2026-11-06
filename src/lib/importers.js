@@ -20,7 +20,19 @@ async function importPDF(file) {
   for(const a of ["STR","DEX","CON","INT","WIS","CHA"]){const v=Number(find(new RegExp(a+"(?:ength|terity|stitution|elligence|dom|risma)?(?: score)?","i")));if(v>0)abilities[a]=v;}
   return {character:normalizeCharacter({name,species:find(/race|species/i),className:find(/class/i),level:Number(find(/level/i))||1,background:find(/background/i),abilities,importMetadata:{source:file.name,importedAt:new Date().toISOString(),pdfFields:fields}}),warnings:["PDF-import leest invulbare velden. Niet alle D&D Beyond-details staan noodzakelijk in de PDF.","Alle herkende PDF-velden blijven bewaard voor latere verbetering van de mapping."]};
 }
-function importAurora(sourceText,filename) {\n  try { const parsed=JSON.parse(sourceText); const mapped=mapAuroraJSON(parsed,filename); if(mapped) return mapped; } catch {}\n  return importXML(sourceText,filename);\n}\nfunction mapAuroraJSON(data,filename) {\n  const entries=[]; const walk=(v,path="")=>{if(!v||typeof v!=="object")return; for(const [k,x] of Object.entries(v)){entries.push([k.toLowerCase().replace(/[^a-z0-9]/g,""),x,path]); if(x&&typeof x==="object")walk(x,path+"/"+k);}}; walk(data);\n  const pick=(...keys)=>{for(const k of keys){const hit=entries.find(e=>e[0]===k&&["string","number"].includes(typeof e[1]));if(hit&&String(hit[1]).trim())return hit[1];}return "";};\n  const name=pick("charactername","name","charname"); if(!name)return null;\n  const abilities={}; for(const a of ["str","dex","con","int","wis","cha"]){const n=Number(pick(a,a+"score",a+"total"));if(n>0)abilities[a.toUpperCase()]=n;}\n  const character=normalizeCharacter({name:String(name),species:String(pick("race","species","racename")||""),className:String(pick("classname","class")||""),level:Number(pick("totallevel","level"))||1,background:String(pick("background")||""),abilities,importMetadata:{source:filename,importedAt:new Date().toISOString(),rawData:data}});\n  return {character,warnings:["Aurora .dnd5e JSON-import is voorlopig een generieke eerste mapping. Controleer alle velden; onbekende data blijft in de importmetadata bewaard."]};\n}\nfunction importXML(xml,filename) {
+function importAurora(sourceText,filename) {
+  try { const parsed=JSON.parse(sourceText); const mapped=mapAuroraJSON(parsed,filename); if(mapped) return mapped; } catch {}
+  return importXML(sourceText,filename);
+}
+function mapAuroraJSON(data,filename) {
+  const entries=[]; const walk=(v,path="")=>{if(!v||typeof v!=="object")return; for(const [k,x] of Object.entries(v)){entries.push([k.toLowerCase().replace(/[^a-z0-9]/g,""),x,path]); if(x&&typeof x==="object")walk(x,path+"/"+k);}}; walk(data);
+  const pick=(...keys)=>{for(const k of keys){const hit=entries.find(e=>e[0]===k&&["string","number"].includes(typeof e[1]));if(hit&&String(hit[1]).trim())return hit[1];}return "";};
+  const name=pick("charactername","name","charname"); if(!name)return null;
+  const abilities={}; for(const a of ["str","dex","con","int","wis","cha"]){const n=Number(pick(a,a+"score",a+"total"));if(n>0)abilities[a.toUpperCase()]=n;}
+  const character=normalizeCharacter({name:String(name),species:String(pick("race","species","racename")||""),className:String(pick("classname","class")||""),level:Number(pick("totallevel","level"))||1,background:String(pick("background")||""),abilities,importMetadata:{source:filename,importedAt:new Date().toISOString(),rawData:data}});
+  return {character,warnings:["Aurora .dnd5e JSON-import is voorlopig een generieke eerste mapping. Controleer alle velden; onbekende data blijft in de importmetadata bewaard."]};
+}
+function importXML(xml,filename) {
   const doc=new DOMParser().parseFromString(xml,"application/xml");
   if(doc.querySelector("parsererror")) throw new Error("Aurora-bestand kon niet als XML worden gelezen.");
   const root=doc.documentElement, build=root.querySelector(":scope > build");
