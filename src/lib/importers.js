@@ -57,17 +57,27 @@ function importAurora(sourceText,filename) {\n  try { const parsed=JSON.parse(so
   });
   const currencyNode=input.querySelector("currency"), currency={cp:num(currencyNode,"copper"),sp:num(currencyNode,"silver"),ep:num(currencyNode,"electrum"),gp:num(currencyNode,"gold"),pp:num(currencyNode,"platinum")};
   const background=val(display,"background")||sum.find(x=>x.getAttribute("type")==="Background")?.getAttribute("id")?.replace(/^ID_BACKGROUND_/,"").replace(/_/g," ")||"";
-  const features=[...new Set(sum.filter(x=>["Racial Trait","Background Feature","Feat","Class Feature","Archetype Feature"].includes(x.getAttribute("type"))).map(x=>(x.getAttribute("id")||"").replace(/^ID_[A-Z0-9_]+_(?:RACIAL_TRAIT|BACKGROUND_FEATURE|FEAT|CLASS_FEATURE|ARCHETYPE_FEATURE)_/,"").replace(/_/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase())).filter(Boolean))];
+  const features=[...new Set(sum.filter(x=>["Racial Trait","Background Feature","Feat","Class Feature","Archetype Feature","Ability Score Improvement"].includes(x.getAttribute("type"))).map(x=>(x.getAttribute("id")||"").replace(/^ID_[A-Z0-9_]+_(?:RACIAL_TRAIT|BACKGROUND_FEATURE|FEAT|CLASS_FEATURE|ARCHETYPE_FEATURE)_/,"").replace(/_/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase())).filter(Boolean))];
   const languages=sum.filter(x=>x.getAttribute("type")==="Language").map(x=>(x.getAttribute("id")||"").replace(/^ID_[A-Z0-9_]+_LANGUAGE_/,"").replace(/_/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase()));
   const traits=[...new Set(languages)];
   const backstory=val(input,"backstory"), appearance=build.querySelector(":scope > appearance");
   const nameParts=classSummary.split(" / ");
   const mainClass=nameParts[0]?.replace(/ \d+$/,"")||className;
   const hpWarning="Aurora-export bevat in dit bestand geen expliciete actuele/maximale HP-velden. HP is daarom niet gegokt en moet na import worden ingevuld.";
+  const armorNames=equipment.map(x=>x.name.toLowerCase()); const dexMod=Math.floor((abilities.DEX-10)/2); let armorClass=10+dexMod;
+  if(armorNames.some(x=>x.includes("studded leather"))) armorClass=12+dexMod;
+  else if(armorNames.some(x=>x.includes("leather"))) armorClass=11+dexMod;
+  else if(armorNames.some(x=>x.includes("chain shirt")||x.includes("hide"))) armorClass=13+Math.min(2,dexMod);
+  else if(armorNames.some(x=>x.includes("scale mail")||x.includes("breastplate"))) armorClass=14+Math.min(2,dexMod);
+  else if(armorNames.some(x=>x.includes("half plate"))) armorClass=15+Math.min(2,dexMod);
+  else if(armorNames.some(x=>x.includes("chain mail"))) armorClass=16;
+  else if(armorNames.some(x=>x.includes("splint"))) armorClass=17;
+  else if(armorNames.some(x=>x.includes("plate"))) armorClass=18;
+  if(armorNames.some(x=>x==="shield")) armorClass+=2;
   const character=normalizeCharacter({
     name,species:val(display,"race"),className:mainClass,subclass:subclass||val(display,"archetype"),level:num(display,"level",levelNodes.length||1),background,
     abilities,proficiencyBonus:Math.ceil(num(display,"level",1)/4)+1,
-    savingThrows,skillProficiencies,armorClass:0,initiative:0,speed:30,
+    savingThrows,skillProficiencies,armorClass,initiative:dexMod,speed:30,
     hitPoints:{current:0,maximum:0,temporary:0},
     attacks,spellcasting:{ability:spellcasting[0]?.ability||"",saveDC:spellcasting[0]?.saveDC||0,attackBonus:spellcasting[0]?.attackBonus||0,slots:Object.assign({},...spellcasting.map(x=>x.slots)),spells:spellcasting.flatMap(x=>x.spells.map(sp=>({...sp,spellcastingClass:x.name})))},
     inventory:equipment,currency,features,traits,notes:[backstory,val(input,"notes"),val(input,"additional-features")].filter(Boolean).join("\n\n"),
