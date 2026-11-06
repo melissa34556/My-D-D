@@ -78,7 +78,7 @@ function importAurora(sourceText,filename) {\n  try { const parsed=JSON.parse(so
     name,species:val(display,"race"),className:classSummary||mainClass,subclass:subclass||val(display,"archetype"),level:num(display,"level",levelNodes.length||1),background,
     abilities,proficiencyBonus:Math.ceil(num(display,"level",1)/4)+1,
     savingThrows,skillProficiencies,armorClass,initiative:dexMod,speed:30,
-    hitPoints:{current:0,maximum:0,temporary:0},
+    hitPoints:{current:0,maximum:0,temporary:0},hitDiceByClass:Object.fromEntries(Object.entries(classCounts).map(([cls,total])=>[cls,{size:({"Barbarian":12,"Fighter":10,"Paladin":10,"Ranger":10,"Bard":8,"Cleric":8,"Druid":8,"Monk":8,"Rogue":8,"Warlock":8,"Sorcerer":6,"Wizard":6}[cls]||8),total,used:0}])),
     attacks,spellcasting:{ability:spellcasting[0]?.ability||"",saveDC:spellcasting[0]?.saveDC||0,attackBonus:spellcasting[0]?.attackBonus||0,slots:Object.assign({},...spellcasting.map(x=>x.slots)),spells:spellcasting.flatMap(x=>x.spells.map(sp=>({...sp,spellcastingClass:x.name})))},
     inventory:equipment,currency,features,traits,notes:[backstory,val(input,"notes"),val(input,"additional-features")].filter(Boolean).join("\n\n"),
     importMetadata:{source:filename,format:"Aurora Builder .dnd5e XML",auroraVersion:root.getAttribute("version")||"",importedAt:new Date().toISOString(),classBreakdown:classCounts,spellcasting,sourceElementIds:sum.map(x=>({type:x.getAttribute("type"),id:x.getAttribute("id")})),appearance:{age:val(appearance,"age"),height:val(appearance,"height"),weight:val(appearance,"weight"),eyes:val(appearance,"eyes"),skin:val(appearance,"skin"),hair:val(appearance,"hair")},playerName:val(input,"player-name"),experience:num(input,"experience"),gender:val(input,"gender"),languages}
