@@ -1,15 +1,16 @@
 import {useEffect,useRef,useState} from "react";
 import {createCharacter,normalizeCharacter,exportCharacter} from "./lib/character.js";
 import {importFile} from "./lib/importers.js";
+import {loadCharacterLibrary,saveCharacterLibrary} from "./lib/storage.js";
 const KEY="my-dd-library-v2",ABILITIES=["STR","DEX","CON","INT","WIS","CHA"];
 const TABS=["Overview","Abilities","Combat","Spells","Inventory","Features","Notes"];
 const mod=n=>Math.floor((Number(n||10)-10)/2),signed=n=>n>=0?"+"+n:String(n);
-function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||"null");if(Array.isArray(x))return x.map(normalizeCharacter);}catch{}try{const old=JSON.parse(localStorage.getItem("my-dd-character")||"null");if(old)return [normalizeCharacter(old)];}catch{}return [createCharacter({name:"Aelindra Moonwhisper",species:"Half-Elf",className:"Ranger",subclass:"Gloom Stalker",level:5,background:"Outlander",abilities:{STR:12,DEX:18,CON:14,INT:10,WIS:16,CHA:13},armorClass:16,speed:35,proficiencyBonus:3,hitPoints:{current:37,maximum:44,temporary:0},skillProficiencies:["Perception","Stealth","Survival","Athletics"],features:["Favored Enemy","Deft Explorer","Extra Attack","Dread Ambusher"]})];}
+function load(){try{const x=loadCharacterLibrary();if(Array.isArray(x))return x.map(normalizeCharacter);}catch{}try{const old=JSON.parse(localStorage.getItem("my-dd-character")||"null");if(old)return [normalizeCharacter(old)];}catch{}return [createCharacter({name:"Aelindra Moonwhisper",species:"Half-Elf",className:"Ranger",subclass:"Gloom Stalker",level:5,background:"Outlander",abilities:{STR:12,DEX:18,CON:14,INT:10,WIS:16,CHA:13},armorClass:16,speed:35,proficiencyBonus:3,hitPoints:{current:37,maximum:44,temporary:0},skillProficiencies:["Perception","Stealth","Survival","Athletics"],features:["Favored Enemy","Deft Explorer","Extra Attack","Dread Ambusher"]})];}
 const INITIAL_LIBRARY=load();
 export default function App(){
  const [list,setList]=useState(INITIAL_LIBRARY),[id,setId]=useState(INITIAL_LIBRARY[0]?.id),[tab,setTab]=useState("Overview"),[last,setLast]=useState(null),[history,setHistory]=useState([]),[review,setReview]=useState(null),[notice,setNotice]=useState("");
  const file=useRef(null),c=list.find(x=>x.id===id)||list[0];
- useEffect(()=>localStorage.setItem(KEY,JSON.stringify(list)),[list]);
+ useEffect(()=>{const result=saveCharacterLibrary(list);if(!result.ok)setNotice("Opslaan mislukt: browseropslag is mogelijk vol.");},[list]);
  useEffect(()=>{if(!id&&list[0])setId(list[0].id)},[id,list]);
  const patch=(k,v)=>setList(xs=>xs.map(x=>x.id===id?normalizeCharacter({...x,[k]:v}):x));
  const roll=(label,b=0,formula="1d20")=>{const m=String(formula).match(/^(\d*)d(4|6|8|10|12|20|100)([+-]\d+)?$/i),count=Math.min(100,Number(m?.[1]||1)),sides=Number(m?.[2]||20),extra=Number(m?.[3]||0),dice=Array.from({length:count},()=>Math.floor(Math.random()*sides)+1),r={label,total:dice.reduce((a,v)=>a+v,0)+extra+b,dice,formula,time:new Date().toLocaleTimeString("nl-NL",{hour:"2-digit",minute:"2-digit"})};setLast(r);setHistory(h=>[r,...h].slice(0,12));};
