@@ -58,7 +58,7 @@ function importXML(xml,filename) {
   for(const lv of levelNodes){const id=lv.getAttribute("class");let cls=lv.getAttribute("multiclass")==="true"?id?.match(/MULTICLASS_([A-Z_]+)$/)?.[1]:classId.match(/CLASS_([A-Z_]+)$/)?.[1];if(cls){cls=cls.replace(/_/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());classCounts[cls]=(classCounts[cls]||0)+1;}}
   const classSummary=Object.entries(classCounts).map(([k,v])=>k+" "+v).join(" / ")||val(display,"class")||className;
   const subclassIds=sum.filter(x=>x.getAttribute("type")==="Archetype").map(x=>x.getAttribute("id")||"");
-  const subclasses=[...new Set(subclassIds.map(id=>id.replace(/^.*ARCHETYPE_[A-Z0-9]+_/,"").replace(/_/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase())).filter(Boolean))];
+  const subclasses=[...new Set(subclassIds.map(id=>{const upper=id.toUpperCase();if(upper.endsWith("_GLOOM_STALKER"))return "Gloom Stalker";if(upper.endsWith("_THE_ARCHFEY"))return "The Archfey";return id.replace(/^.*ARCHETYPE_[A-Z0-9]+_/,"").replace(/_/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());}).filter(Boolean))];
   const subclass=subclasses[0]||"";
   const equipment=[...build.querySelectorAll(":scope > equipment > item")].filter(x=>x.getAttribute("hidden")!=="true").map(x=>({name:x.getAttribute("name")||"Unknown item",quantity:Number(x.getAttribute("amount")||1),sourceId:x.getAttribute("id")||"",identifier:x.getAttribute("identifier")||"",equipped:x.getAttribute("equipped")==="true"}));
   const attacks=[...input.querySelectorAll("attacks > attack")].map(x=>({name:x.getAttribute("name")||"Attack",range:x.getAttribute("range")||"",attackBonus:Number((x.getAttribute("attack")||"").match(/[+-]?\d+/)?.[0]||0),damage:(x.getAttribute("damage")||"").split(" ")[0]||"1d6",damageType:(x.getAttribute("damage")||"").replace(/^[^ ]+\s*/,""),description:x.textContent||""}));
@@ -97,6 +97,5 @@ function importXML(xml,filename) {
     importMetadata:{source:filename,format:"Aurora Builder .dnd5e XML",auroraVersion:root.getAttribute("version")||"",importedAt:new Date().toISOString(),classBreakdown:classCounts,spellcasting,sourceElementIds:sum.map(x=>({type:x.getAttribute("type"),id:x.getAttribute("id")})),appearance:{age:val(appearance,"age"),height:val(appearance,"height"),weight:val(appearance,"weight"),eyes:val(appearance,"eyes"),skin:val(appearance,"skin"),hair:val(appearance,"hair")},playerName:val(input,"player-name"),experience:num(input,"experience"),gender:val(input,"gender"),languages}
   });
   const warnings=[hpWarning,"Controleer de klasseverdeling en vaardigheids-/saving throw-proficiencies. Aurora bewaart sommige afgeleide waarden als bron-ID's.","De portrait-afbeelding is niet geïmporteerd; Aurora kan deze als lokaal bestandspad opslaan dat op een ander apparaat niet geldig is."];
-  if(spellcasting.length>1) warnings.push("Meerdere spellcasting-klassen zijn samengevoegd in één spellbook. De oorspronkelijke spellcasting-profielen zijn bewaard in importmetadata.");
   return {character,warnings};
 }
