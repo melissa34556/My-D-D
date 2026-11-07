@@ -66,7 +66,7 @@ function importXML(xml,filename) {
     const slotsNode=sc.querySelector("slots"), slots={};
     if(slotsNode) for(let i=1;i<=9;i++){const total=Number(slotsNode.getAttribute("s"+i)||0);if(total)slots[i]={total,used:0};}
     const spells=[...sc.querySelectorAll("cantrips > spell, spells > spell")].map(sp=>({name:sp.getAttribute("name")||"Unknown spell",level:Number(sp.getAttribute("level")||0),prepared:sp.getAttribute("prepared")==="true",known:sp.getAttribute("known")==="true",sourceId:sp.getAttribute("id")||""}));
-    return {name:sc.getAttribute("name")||"",ability:sc.getAttribute("ability")||"",attackBonus:Number(sc.getAttribute("attack")||0),saveDC:Number(sc.getAttribute("dc")||0),slots,spells};
+    const profileName=sc.getAttribute("name")||""; return {name:profileName,sourceClass:profileName,poolType:profileName.toLowerCase()==="warlock"?"pact-magic":"spellcasting",recovery:profileName.toLowerCase()==="warlock"?"short":"long",ability:sc.getAttribute("ability")||"",attackBonus:Number(sc.getAttribute("attack")||0),saveDC:Number(sc.getAttribute("dc")||0),slots,spells};
   });
   const currencyNode=input.querySelector("currency"), currency={cp:num(currencyNode,"copper"),sp:num(currencyNode,"silver"),ep:num(currencyNode,"electrum"),gp:num(currencyNode,"gold"),pp:num(currencyNode,"platinum")};
   const background=val(display,"background")||sum.find(x=>x.getAttribute("type")==="Background")?.getAttribute("id")?.replace(/^ID_BACKGROUND_/,"").replace(/_/g," ")||"";
