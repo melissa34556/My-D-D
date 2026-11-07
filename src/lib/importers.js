@@ -60,6 +60,8 @@ function importXML(xml,filename) {
   const subclassIds=sum.filter(x=>x.getAttribute("type")==="Archetype").map(x=>x.getAttribute("id")||"");
   const subclasses=[...new Set(subclassIds.map(id=>{const upper=id.toUpperCase();if(upper.endsWith("_GLOOM_STALKER"))return "Gloom Stalker";if(upper.endsWith("_THE_ARCHFEY"))return "The Archfey";return id.replace(/^.*ARCHETYPE_[A-Z0-9]+_/,"").replace(/_/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());}).filter(Boolean))];
   const subclass=subclasses[0]||"";
+  const subclassesByClass={};
+  for(const node of sum.filter(x=>x.getAttribute("type")==="Archetype")){const raw=(node.getAttribute("id")||"").toUpperCase();for(const cls of Object.keys(classCounts)){const token="_"+cls.toUpperCase().replace(/[^A-Z0-9]+/g,"_")+"_";if(raw.includes(token))subclassesByClass[cls]=raw.split(token).pop().replace(/_/g," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());}}
   const equipment=[...build.querySelectorAll(":scope > equipment > item")].filter(x=>x.getAttribute("hidden")!=="true").map(x=>({name:x.getAttribute("name")||"Unknown item",quantity:Number(x.getAttribute("amount")||1),sourceId:x.getAttribute("id")||"",identifier:x.getAttribute("identifier")||"",equipped:x.getAttribute("equipped")==="true"}));
   const attacks=[...input.querySelectorAll("attacks > attack")].map(x=>({name:x.getAttribute("name")||"Attack",range:x.getAttribute("range")||"",attackBonus:Number((x.getAttribute("attack")||"").match(/[+-]?\d+/)?.[0]||0),damage:(x.getAttribute("damage")||"").split(" ")[0]||"1d6",damageType:(x.getAttribute("damage")||"").replace(/^[^ ]+\s*/,""),description:x.textContent||""}));
   const spellcasting=[...build.querySelectorAll(":scope > magic > spellcasting")].map(sc=>{
@@ -88,7 +90,7 @@ function importXML(xml,filename) {
   else if(armorNames.some(x=>x.includes("plate"))) armorClass=18;
   if(armorNames.some(x=>x==="shield")) armorClass+=2;
   const character=normalizeCharacter({
-    name,species:val(display,"race"),className:classSummary||mainClass,subclass:subclass||val(display,"archetype"),subclasses,level:num(display,"level",levelNodes.length||1),background,
+    name,species:val(display,"race"),className:classSummary||mainClass,subclass:subclass||val(display,"archetype"),subclasses,subclassesByClass,level:num(display,"level",levelNodes.length||1),background,
     abilities,proficiencyBonus:Math.ceil(num(display,"level",1)/4)+1,
     savingThrows,skillProficiencies,armorClass,initiative:dexMod,speed:30,
     hitPoints:{current:0,maximum:0,temporary:0},hitDiceByClass:Object.fromEntries(Object.entries(classCounts).map(([cls,total])=>[cls,{size:({"Barbarian":12,"Fighter":10,"Paladin":10,"Ranger":10,"Bard":8,"Cleric":8,"Druid":8,"Monk":8,"Rogue":8,"Warlock":8,"Sorcerer":6,"Wizard":6}[cls]||8),total,used:0}])),
