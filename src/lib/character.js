@@ -7,7 +7,7 @@ export function createCharacter(overrides = {}) {
     savingThrows:[], skillProficiencies:[], armorClass:10, initiative:0, speed:30,
     hitPoints:{current:8,maximum:8,temporary:0}, hitDice:"1d8", hitDiceUsed:0, hitDiceByClass:{}, deathSaves:{successes:0,failures:0},
     attacks:[], actions:[], spellcasting:{ability:"",saveDC:0,attackBonus:0,slots:{},spells:[]},
-    inventory:[], currency:{cp:0,sp:0,ep:0,gp:0,pp:0}, inspiration:{current:0,history:[]}, features:[],traits:[],resources:[],conditions:[],notes:"",
+    inventory:[], currency:{cp:0,sp:0,ep:0,gp:0,pp:0}, inspiration:{current:0,history:[]}, features:[],traits:[],resources:[],conditions:[],concentration:"",exhaustionLevel:0,notes:"",
     importMetadata:null,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()
   };
   return {...base,...overrides,abilities:{...base.abilities,...(overrides.abilities||{})},hitPoints:{...base.hitPoints,...(overrides.hitPoints||{})},spellcasting:{...base.spellcasting,...(overrides.spellcasting||{})},currency:{...base.currency,...(overrides.currency||{})},inspiration:{...base.inspiration,...(overrides.inspiration||{}),history:Array.isArray(overrides.inspiration?.history)?overrides.inspiration.history:[]}};
