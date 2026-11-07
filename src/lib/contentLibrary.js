@@ -7,8 +7,39 @@ export async function removeContent(id){return transact(STORE,"readwrite",os=>os
 export async function getSources(){const db=await openDB();return new Promise((resolve,reject)=>{const req=db.transaction(SOURCES).objectStore(SOURCES).getAll();req.onsuccess=()=>{db.close();resolve(req.result||[]);};req.onerror=()=>{db.close();reject(req.error);};});}
 export async function saveSource(source){return transact(SOURCES,"readwrite",os=>os.put(source));}
 export async function removeSource(id){return transact(SOURCES,"readwrite",os=>os.delete(id));}
-const classify=s=>{const x=s.toLowerCase();if(/spell/.test(x))return"Spells";if(/class|archetype|subclass/.test(x))return"Classes";if(/race|species/.test(x))return"Species";if(/background/.test(x))return"Backgrounds";if(/feat/.test(x))return"Feats";if(/weapon|armor|equipment|item|gear/.test(x))return"Equipment";if(/monster|creature/.test(x))return"Creatures";if(/rule|condition/.test(x))return"Rules";return"Other";};
+const classify=s=>{const x=String(s||"").toLowerCase();if(/spell/.test(x))return"Spells";if(/class|archetype|subclass/.test(x))return"Classes";if(/race|species/.test(x))return"Species";if(/background/.test(x))return"Backgrounds";if(/feat/.test(x))return"Feats";if(/weapon|armor|equipment|item|gear/.test(x))return"Equipment";if(/monster|creature/.test(x))return"Creatures";if(/rule|condition/.test(x))return"Rules";return"Other";};
 const idFor=(source,id,name)=>source+":"+String(id||name).toLowerCase().replace(/[^a-z0-9]+/g,"-");
-function xmlRecords(doc,filename){const nodes=[...doc.querySelectorAll("*")].filter(n=>n.children.length>0||n.attributes.length>0);const out=[];for(const n of nodes){const name=n.getAttribute("name")||n.querySelector(":scope > name")?.textContent?.trim()||n.getAttribute("title");if(!name||name.length>140)continue;const id=n.getAttribute("id")||n.getAttribute("identifier")||name;const description=[...n.querySelectorAll(":scope > description,:scope > text,:scope > entries")].map(x=>x.textContent.trim()).filter(Boolean).join("\n\n");const category=classify([n.tagName,n.getAttribute("type"),n.getAttribute("category"),filename].filter(Boolean).join(" "));if(out.some(x=>x.name.toLowerCase()===name.toLowerCase()&&x.category===category))continue;out.push({id:idFor(filename,id,name),name,category,description,source:filename,sourceId:id,kind:n.tagName});}return out;}
-function jsonRecords(data,filename){const out=[];const walk=(v,kind="")=>{if(Array.isArray(v)){v.forEach(x=>walk(x,kind));return;}if(!v||typeof v!=="object")return;const name=v.name||v.title;if(typeof name==="string"&&name.trim()){const category=classify([kind,v.type,v.category,filename].filter(Boolean).join(" "));const description=typeof v.description==="string"?v.description:typeof v.entries==="string"?v.entries:Array.isArray(v.entries)?v.entries.map(x=>typeof x==="string"?x:"").filter(Boolean).join("\n\n"):"";out.push({id:idFor(filename,v.id||v.key||name,name),name:name.trim(),category,description,source:filename,sourceId:v.id||v.key||"",kind});}for(const [k,x] of Object.entries(v))if(x&&typeof x==="object")walk(x,k);};walk(data);return out;}
+const direct=(node,tag)=>node.querySelector(":scope > "+tag)?.textContent?.trim()||"";
+function xmlRecords(doc,filename){
+ const out=[],seen=new Set(),nodes=[...doc.querySelectorAll("*")].filter(n=>n.children.length>0||n.attributes.length>0);
+ for(const n of nodes){
+  const name=n.getAttribute("name")||direct(n,"name")||n.getAttribute("title");if(!name||name.length>140)continue;
+  const id=n.getAttribute("id")||n.getAttribute("identifier")||name;
+  const ownType=[n.tagName,n.getAttribute("type"),n.getAttribute("category")].filter(Boolean).join(" ");
+  const category=classify(ownType)!=="Other"?classify(ownType):classify(filename);
+  const description=[...n.querySelectorAll(":scope > description,:scope > text,:scope > entries,:scope > flavor")].map(x=>x.textContent.trim()).filter(Boolean).join("\n\n");
+  const rawLevel=n.getAttribute("level")||n.getAttribute("spell-level")||direct(n,"level")||direct(n,"spell-level");
+  const level=rawLevel!==""&&Number.isFinite(Number(rawLevel))?Number(rawLevel):undefined;
+  const key=category+":"+String(name).toLowerCase();if(seen.has(key))continue;seen.add(key);
+  out.push({id:idFor(filename,id,name),name:name.trim(),category,description,source:filename,sourceId:id,kind:n.tagName,...(level!==undefined?{level}:{})});
+ }
+ return out;
+}
+function jsonRecords(data,filename){
+ const out=[],seen=new Set();
+ const walk=(v,kind="")=>{
+  if(Array.isArray(v)){v.forEach(x=>walk(x,kind));return;}
+  if(!v||typeof v!=="object")return;
+  const name=v.name||v.title;
+  if(typeof name==="string"&&name.trim()){
+   const ownType=[kind,v.type,v.category].filter(Boolean).join(" "),category=classify(ownType)!=="Other"?classify(ownType):classify(filename);
+   const description=typeof v.description==="string"?v.description:typeof v.entries==="string"?v.entries:Array.isArray(v.entries)?v.entries.map(x=>typeof x==="string"?x:typeof x?.text==="string"?x.text:"").filter(Boolean).join("\n\n"):"";
+   const rawLevel=v.level??v.spellLevel??v["spell-level"],level=rawLevel!==undefined&&Number.isFinite(Number(rawLevel))?Number(rawLevel):undefined;
+   const key=category+":"+name.trim().toLowerCase();
+   if(!seen.has(key)){seen.add(key);out.push({id:idFor(filename,v.id||v.key||name,name),name:name.trim(),category,description,source:filename,sourceId:v.id||v.key||"",kind,...(level!==undefined?{level}:{})});}
+  }
+  for(const [k,x] of Object.entries(v))if(x&&typeof x==="object")walk(x,k);
+ };
+ walk(data);return out;
+}
 export async function parseContentFile(file){const text=await file.text(),name=file.name;let records=[];if(/\.json$/i.test(name)){records=jsonRecords(JSON.parse(text),name);}else if(/\.xml$/i.test(name)||/\.por$/i.test(name)||/\.dnd5e$/i.test(name)){const doc=new DOMParser().parseFromString(text,"application/xml");if(doc.querySelector("parsererror"))throw new Error(name+": ongeldig XML-bestand.");records=xmlRecords(doc,name);}else throw new Error(name+": alleen XML, JSON, POR en DND5E worden ondersteund.");return {records,filename:name};}
