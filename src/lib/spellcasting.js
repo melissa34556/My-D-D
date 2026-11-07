@@ -3,6 +3,7 @@ const FULL=new Set(["bard","cleric","druid","sorcerer","wizard"]);
 const HALF_DOWN=new Set(["paladin","ranger"]);
 const HALF_UP=new Set(["artificer"]);
 const THIRD=new Set(["rogue","fighter"]);
+const NONCASTER=new Set(["barbarian","monk"]);
 const SLOT_TABLE=[[],[2],[3],[4,2],[4,3],[4,3,2],[4,3,3],[4,3,3,1],[4,3,3,2],[4,3,3,3,1],[4,3,3,3,2],[4,3,3,3,2,1],[4,3,3,3,2,1],[4,3,3,3,2,1,1],[4,3,3,3,2,1,1],[4,3,3,3,2,1,1,1],[4,3,3,3,2,1,1,1],[4,3,3,3,2,1,1,1,1],[4,3,3,3,3,1,1,1,1],[4,3,3,3,3,2,1,1,1],[4,3,3,3,3,2,2,1,1]];
 const norm=s=>String(s||"").trim().toLowerCase();
 const subclassKind=(cls,sub)=>{const s=norm(sub),c=norm(cls);if(c==="rogue"&&s==="arcane trickster")return"third";if(c==="fighter"&&s==="eldritch knight")return"third";return"";};
@@ -18,6 +19,7 @@ export function calculateMulticlassSlots(classLevels={},subclasses={}) {
   else if(key==="warlock"){note="Pact Magic: aparte";}
   else if(THIRD.has(key)&&subclassKind(name,sub)==="third")contribution=Math.floor(level/3);
   else if(THIRD.has(key)){note="Geen Spellcasting-subclass herkend";}
+  else if(NONCASTER.has(key)){note="Geen Spellcasting class feature";}
   else {unsupported.push(name);note="Niet automatisch meegerekend";}
   casterLevel+=contribution;breakdown.push({name,level,contribution,note});
  }
