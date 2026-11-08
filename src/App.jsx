@@ -1,4 +1,4 @@
-import {useEffect,useRef,useState} from "react";
+import React,{useEffect,useRef,useState} from "react";
 import {createCharacter,normalizeCharacter,exportCharacter} from "./lib/character.js";
 import {importFile} from "./lib/importers.js";
 import {loadCharacterLibrary,saveCharacterLibrary} from "./lib/storage.js";
