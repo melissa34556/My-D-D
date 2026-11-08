@@ -228,3 +228,20 @@
  .play-hero{padding:12px 14px 9px!important;row-gap:12px!important}
  .play-hero-stats{grid-template-rows:94px 47px!important}
 }
+
+
+/* Final requested controls: compact name, no armor glyph/inspiration tile, three-item app nav */
+.play-identity h1{font-size:17px!important;line-height:1.2!important;font-weight:500!important}
+.play-identity p{font-size:11px!important}
+.hero-stat.armor b{font-size:29px!important}
+.hero-inspiration{display:none!important}
+.play-hero-stats{grid-template-columns:1fr 1fr 1.2fr 1.8fr!important}
+.section-view-icons button{min-width:58px}
+.bottom-nav{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.bottom-nav button small{font-size:11px!important}
+.rest-choice{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.rest-choice button{min-height:48px}
+@media(max-width:620px){
+ .play-identity h1{font-size:17px!important}
+ .bottom-nav{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
