@@ -1,0 +1,10 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {calculateArmorClass,calculateCarryingCapacity,getEncumbrance} from "../src/lib/equipment.js";
+test("light armor adds full Dexterity modifier",()=>assert.equal(calculateArmorClass({dexterity:16,armor:{baseAC:11,category:"light"}}),14));
+test("medium armor caps Dexterity modifier at +2",()=>assert.equal(calculateArmorClass({dexterity:18,armor:{baseAC:14,category:"medium"}}),16));
+test("heavy armor ignores Dexterity modifier",()=>assert.equal(calculateArmorClass({dexterity:18,armor:{baseAC:16,category:"heavy"}}),16));
+test("shield adds two AC",()=>assert.equal(calculateArmorClass({dexterity:14,armor:{baseAC:14,category:"medium"},shield:true}),18));
+test("unarmored AC uses 10 plus Dexterity",()=>assert.equal(calculateArmorClass({dexterity:16}),13));
+test("2014 carrying capacity is 15 times Strength",()=>assert.deepEqual(calculateCarryingCapacity(12),{normal:180,pushDragLift:360}));
+test("encumbrance uses 5x and 10x Strength thresholds",()=>{assert.equal(getEncumbrance(25,10).lightlyEncumbered,true);assert.equal(getEncumbrance(55,10).heavilyEncumbered,true);assert.equal(getEncumbrance(160,10).overCapacity,true);});
