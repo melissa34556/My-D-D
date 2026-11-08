@@ -13,5 +13,5 @@ export function calculateCarryingCapacity(strength=10){
 }
 export function getEncumbrance(weight,strength=10){
  const capacity=calculateCarryingCapacity(strength),carried=Math.max(0,Number(weight)||0);
- return {carried,capacity:capacity.normal,pushDragLift:capacity.pushDragLift,overCapacity:carried>capacity.normal,heavilyEncumbered:carried>capacity.normal/3,lightlyEncumbered:carried>capacity.normal/5};
+ return {carried,capacity:capacity.normal,pushDragLift:capacity.pushDragLift,overCapacity:carried>capacity.normal,heavilyEncumbered:carried>capacity.normal*(2/3),lightlyEncumbered:carried>capacity.normal/3};
 }
