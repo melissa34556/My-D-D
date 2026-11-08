@@ -73,3 +73,58 @@
 .read-only-details b{font-size:10px;overflow-wrap:anywhere}
 .character-notes{font-size:11px;line-height:1.6;white-space:pre-wrap;color:var(--muted)}
 @media(max-width:620px){.compact-stats{grid-template-columns:1.45fr repeat(4,minmax(0,.65fr));gap:5px;padding:7px 6px}.compact-stats small{font-size:7px}.compact-stats strong{font-size:12px}.compact-stats .hp strong{font-size:15px}.compact-stats .hp .controls button{font-size:7px;padding:2px 4px}.read-only-abilities{gap:3px}.read-only-abilities>div{padding:6px 2px}.read-only-abilities b{font-size:16px}.read-only-details{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* Character Play — compact companion-app layout */
+.main{padding:14px clamp(12px,2.5vw,28px) 88px!important;max-width:1100px;margin:0 auto}
+.heading{margin:0 0 9px!important;align-items:center!important;min-height:0}
+.heading small{display:none!important}
+.heading h1{font:600 22px 'DM Sans',sans-serif!important;letter-spacing:-.35px;margin:0 0 2px!important;color:#f0f3f6}
+.heading p{font-size:11px!important;color:#91a0ad!important;margin:0!important}
+.compact-stats{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:5px!important;margin:10px 0 12px!important;padding:8px 6px!important;background:#202a33!important;border:0!important;border-radius:6px!important}
+.compact-stats>div{min-width:0!important;min-height:0!important;padding:2px 5px!important;background:transparent!important;border:0!important;border-radius:0!important;text-align:center;display:flex!important;justify-content:center;align-items:center;gap:3px!important}
+.compact-stats small{font-size:8px!important;letter-spacing:.3px!important;color:#a8b4bf!important;line-height:1.2}
+.compact-stats strong,.compact-stats .hp strong{font:600 18px 'DM Sans',sans-serif!important;margin:0!important;line-height:1.15!important;color:#f1f4f7!important;white-space:nowrap}
+.compact-stats em{font:400 10px 'DM Sans'!important;color:#a8b4bf!important}
+.compact-stats .bar{width:100%;height:3px!important;margin:2px 0!important;background:#34424e!important}
+.compact-stats .bar i{background:#2799d5!important}
+.compact-stats .hp .controls{display:none!important}
+.icon-tabs{position:static!important;display:flex!important;gap:0!important;margin:0 0 13px!important;padding:0!important;background:#26343f!important;border:0!important;border-radius:5px!important;overflow-x:auto}
+.icon-tabs button{flex:1 0 68px!important;min-width:68px!important;min-height:43px!important;height:43px!important;display:flex!important;flex-direction:row!important;gap:5px!important;justify-content:center!important;align-items:center!important;border:0!important;border-radius:4px!important;color:#aab7c1!important;font-size:16px!important}
+.icon-tabs button>span:last-child{font-size:9px!important;letter-spacing:0!important}
+.icon-tabs button.selected{background:#344653!important;color:#f1f4f7!important;border:0!important}
+.columns{display:block!important}
+.primary{display:block!important}
+.panel{background:transparent!important;border:0!important;border-radius:0!important;padding:12px 0!important;border-bottom:1px solid #303b44!important}
+.panel h2{font:500 18px 'DM Sans',sans-serif!important;letter-spacing:0!important;text-transform:none!important;color:#edf1f4!important;margin:0 0 12px!important}
+.read-only-abilities{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:9px 13px!important;padding:4px 0 12px}
+.read-only-abilities>div{position:relative;min-height:88px;justify-content:flex-start!important;align-items:center!important;gap:5px!important;padding:9px 4px!important;background:#202c36!important;border:1px solid #405361!important;border-radius:5px!important}
+.read-only-abilities small{font-size:10px!important;color:#d3dce3!important}
+.read-only-abilities b{font-size:26px!important;color:#e8edf1!important;line-height:1.2}
+.read-only-abilities span{font-size:15px!important;font-weight:600;color:#a8bac8!important}
+.read-only-details{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.read-only-details>div{text-align:left!important;padding:8px 5px!important}
+.passive-score-grid{gap:8px!important}
+.passive-score{background:transparent!important;border:1px solid #3b4b58!important;border-radius:5px!important;padding:9px 5px!important}
+.passive-score b{font-size:20px!important}
+.skillgrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:0 18px!important}
+.skillgrid button,.skill-row .skill-open{font-size:11px!important;padding:10px 2px!important}
+.quick-actions{gap:6px!important;margin:8px 0!important}
+.quick-actions button{padding:7px 9px!important;font-size:10px!important;border-radius:4px!important}
+@media(max-width:620px){
+ .main{padding:12px 14px 88px!important}
+ .heading h1{font-size:20px!important}
+ .compact-stats{gap:2px!important;padding:7px 3px!important}
+ .compact-stats>div{padding:2px!important}
+ .compact-stats small{font-size:7px!important}
+ .compact-stats strong,.compact-stats .hp strong{font-size:15px!important}
+ .compact-stats em{font-size:9px!important}
+ .icon-tabs button{flex-basis:64px!important;min-width:64px!important;min-height:42px!important}
+ .read-only-abilities{gap:8px!important}
+ .read-only-abilities>div{min-height:83px!important}
+ .read-only-abilities small{font-size:9px!important}
+ .read-only-abilities b{font-size:24px!important}
+ .skillgrid{grid-template-columns:1fr 1fr!important;gap:0 12px!important}
+ .panel{padding:10px 0!important}
+ .panel h2{font-size:17px!important}
+}
