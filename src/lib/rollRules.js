@@ -8,3 +8,6 @@ export function skillProficiencyBonus(abilityModifier,proficiencyBonus,{proficie
  const prof=Number(proficiencyBonus)||0;
  return (Number(abilityModifier)||0)+(expertise?prof*2:proficient?prof:halfProficiency?Math.floor(prof/2):0);
 }
+export function calculatePassiveScore(skillModifier,{advantage=false,disadvantage=false}={}){
+ return 10+(Number(skillModifier)||0)+(advantage&&!disadvantage?5:disadvantage&&!advantage?-5:0);
+}
