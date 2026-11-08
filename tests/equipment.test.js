@@ -7,4 +7,4 @@ test("heavy armor ignores Dexterity modifier",()=>assert.equal(calculateArmorCla
 test("shield adds two AC",()=>assert.equal(calculateArmorClass({dexterity:14,armor:{baseAC:14,category:"medium"},shield:true}),18));
 test("unarmored AC uses 10 plus Dexterity",()=>assert.equal(calculateArmorClass({dexterity:16}),13));
 test("2014 carrying capacity is 15 times Strength",()=>assert.deepEqual(calculateCarryingCapacity(12),{normal:180,pushDragLift:360}));
-test("encumbrance uses 5x and 10x Strength thresholds",()=>{assert.equal(getEncumbrance(25,10).lightlyEncumbered,true);assert.equal(getEncumbrance(55,10).heavilyEncumbered,true);assert.equal(getEncumbrance(160,10).overCapacity,true);});
+test("encumbrance uses 5x and 10x Strength thresholds",()=>{assert.equal(getEncumbrance(51,10).lightlyEncumbered,true);assert.equal(getEncumbrance(101,10).heavilyEncumbered,true);assert.equal(getEncumbrance(160,10).overCapacity,true);});
