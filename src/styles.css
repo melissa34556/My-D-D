@@ -128,3 +128,78 @@
  .panel{padding:10px 0!important}
  .panel h2{font-size:17px!important}
 }
+
+
+/* Reference layout: character header, hero stat cluster, section banner and app dock */
+.play-hero{background:#202b34;margin:-14px calc(-1 * clamp(12px,2.5vw,28px)) 0;padding:14px clamp(12px,2.5vw,28px) 13px;display:grid;grid-template-columns:34px 1fr;column-gap:8px;row-gap:18px}
+.play-back{grid-column:1;grid-row:1;border:0;background:transparent;color:#eef3f6;font-size:40px;line-height:1;padding:0;align-self:start}
+.play-identity{grid-column:2;grid-row:1;align-self:center}
+.play-identity h1{font:500 21px 'DM Sans',sans-serif!important;margin:0 0 1px!important;letter-spacing:-.4px}
+.play-identity p{margin:0;color:#9eabb6;font-size:12px}
+.play-hero-stats{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1.2fr 1.8fr;grid-template-rows:105px 52px;gap:8px 10px;align-items:stretch}
+.hero-stat{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0}
+.hero-stat small,.hero-hp small{font-size:10px;color:#e3e9ed}
+.hero-stat b{font-size:28px;font-weight:500;line-height:1.1}
+.hero-stat span{font-size:10px}
+.hero-stat.armor b{font-size:29px}
+.hero-stat.initiative b{font-size:32px;font-weight:700;background:#111a21;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);padding:12px 17px}
+.hero-portrait{position:relative;grid-column:3;grid-row:1;align-self:center;justify-self:center;width:100%;max-width:94px;height:105px;border:3px solid #8999a4;border-radius:6px;background:#33434e;display:grid;place-items:center;color:#e5edf2;font-size:27px;overflow:hidden}
+.hero-portrait img{width:100%;height:100%;object-fit:cover}
+.hero-portrait small{position:absolute;bottom:-7px;left:calc(50% - 13px);border-radius:50%;background:#7b8992;padding:3px;color:#fff}
+.hero-hp{grid-column:4;grid-row:1;align-self:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:#111a20;border-radius:6px;min-height:88px;padding:10px}
+.hero-hp b{font-size:22px;font-weight:600}
+.hero-hp i{display:block;width:100%;height:4px;background:#364957;margin-top:4px}
+.hero-hp i span{display:block;height:100%;background:#229bd9}
+.hero-action{border:0;background:#111a20;border-radius:6px;color:#f1f4f6;font-size:25px;display:grid;place-items:center}
+.hero-action.rest{grid-column:1;grid-row:2}
+.hero-action.settings{grid-column:2;grid-row:2}
+.hero-inspiration{grid-column:3;grid-row:2;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:10px;line-height:1.05}
+.hero-inspiration b{font-size:23px}
+.hero-action.conditions{grid-column:4;grid-row:2;font-size:14px;font-weight:600}
+.play-section-title{display:flex;align-items:center;gap:12px;background:#263640;border-radius:5px;min-height:58px;padding:0 12px;margin:14px 0 13px}
+.play-section-title .section-emblem{font-size:23px}
+.play-section-title>b{font-size:15px;font-weight:700}
+.section-view-icons{margin-left:auto;display:flex;align-self:stretch}
+.section-view-icons button{border:0;background:transparent;padding:0 13px;color:#dbe3e8;font-size:23px}
+.section-view-icons button:first-child{background:#344b59;color:#d71920}
+.icon-tabs{display:none!important}
+.ornate-abilities{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px 18px;padding:7px 0 18px}
+.ornate-ability{min-height:125px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:4px;padding:11px 3px 9px;background:#202d37;border:3px solid #405361;border-radius:12px 8px 12px 8px;clip-path:polygon(9% 0,91% 0,100% 10%,96% 50%,100% 88%,88% 100%,12% 100%,0 88%,4% 50%,0 10%)}
+.ornate-ability small{font-size:11px;color:#f0f3f5;text-align:center;white-space:nowrap}
+.ornate-ability b{font-size:29px;line-height:1.2;color:#aabac6;margin-top:6px}
+.ornate-ability span{margin-top:auto;min-width:55px;text-align:center;border:3px solid #405361;border-radius:50%;background:#111a20;padding:5px 9px;font-size:21px}
+.ornate-saves{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 16px}
+.ornate-saves button{display:flex;align-items:center;gap:8px;min-width:0;min-height:55px;padding:4px 6px;background:#202d37;border:2px solid #405361;border-radius:18px;color:#eef2f5;text-align:left}
+.ornate-saves i{font-style:normal;font-size:18px}
+.ornate-saves i.proficient{color:#f1f4f6}
+.ornate-saves span{font-size:10px;flex:1;white-space:nowrap}
+.ornate-saves b{font-size:18px;color:#aebfcb;border:3px solid #405361;border-radius:50%;padding:9px 8px}
+.bottom-nav{position:fixed!important;z-index:20;left:0;right:0;bottom:0;height:68px!important;padding:5px 4px max(5px,env(safe-area-inset-bottom))!important;background:#151d24!important;border-top:1px solid #303c45!important;display:grid!important;grid-template-columns:repeat(5,1fr)!important;gap:0!important}
+.bottom-nav button{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important;border:0!important;background:transparent!important;color:#9aa9b4!important;padding:2px!important}
+.bottom-nav button span{font-size:25px!important;line-height:1.05}
+.bottom-nav button small{font-size:10px!important}
+.bottom-nav button.active{color:#f1f4f6!important;font-weight:700}
+.bottom-nav button.active span{color:#d71920!important}
+@media(max-width:620px){
+ .play-hero{margin:-12px -14px 0;padding:12px 14px 9px;row-gap:16px}
+ .play-hero-stats{grid-template-columns:.85fr .9fr 1.1fr 1.55fr;grid-template-rows:94px 47px;gap:6px}
+ .hero-portrait{height:96px;max-width:82px}
+ .hero-stat b{font-size:24px}
+ .hero-stat.initiative b{font-size:27px;padding:10px 14px}
+ .hero-hp{min-height:78px;padding:7px 6px}
+ .hero-hp b{font-size:19px}
+ .hero-action.conditions{font-size:12px}
+ .play-section-title{min-height:52px;padding:0 10px;margin:12px 0}
+ .play-section-title>b{font-size:14px}
+ .section-view-icons button{padding:0 10px}
+ .ornate-abilities{gap:12px 13px}
+ .ornate-ability{min-height:112px;padding-top:9px}
+ .ornate-ability small{font-size:10px}
+ .ornate-ability b{font-size:27px}
+ .ornate-ability span{font-size:19px;min-width:50px}
+ .ornate-saves{gap:10px 8px}
+ .ornate-saves button{min-height:49px;gap:5px;padding:3px}
+ .ornate-saves span{font-size:9px}
+ .ornate-saves b{font-size:16px;padding:7px 6px}
+ .bottom-nav{height:68px!important}
+}
