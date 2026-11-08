@@ -203,3 +203,28 @@
  .ornate-saves b{font-size:16px;padding:7px 6px}
  .bottom-nav{height:68px!important}
 }
+
+
+/* Final alignment with the companion reference */
+.play-screen>header{display:none!important}
+.play-screen>.layout{display:block!important;margin:0!important;padding:0!important;max-width:none!important}
+.play-screen .sidebar{display:none!important}
+.play-screen .main{width:100%!important;max-width:900px!important;margin:0 auto!important;padding:0 14px 84px!important}
+.play-hero{margin:0 -14px!important;padding:14px 14px 9px!important;row-gap:12px!important}
+.play-hero-stats{grid-template-rows:94px 47px!important;gap:6px!important}
+.hero-portrait{width:100%!important;height:94px!important;max-width:82px!important;border:3px solid #8999a4!important;border-radius:7px!important;background:#344650!important}
+.hero-portrait small{display:none!important}
+.hero-portrait img{object-fit:cover!important}
+.hero-action svg{width:27px;height:27px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hero-action.rest svg{width:29px;height:29px}
+.hero-action.settings svg{width:29px;height:29px}
+.hero-action{min-height:47px!important}
+.play-section-title{margin:12px 0 13px!important}
+.bottom-nav button svg{width:27px!important;height:27px!important;fill:none!important;stroke:currentColor!important;stroke-width:1.8!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+.bottom-nav button small{font-size:10px!important}
+.bottom-nav button.active svg{stroke:#d71920!important}
+@media(max-width:620px){
+ .play-screen .main{padding:0 14px 84px!important}
+ .play-hero{padding:12px 14px 9px!important;row-gap:12px!important}
+ .play-hero-stats{grid-template-rows:94px 47px!important}
+}
