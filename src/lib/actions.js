@@ -1,19 +1,14 @@
 const CORE_COMBAT_ACTIONS=[
- {name:"Attack",description:"Make one melee or ranged attack. Some features allow more attacks when you take the Attack action."},
+ {name:"Attack",description:"Make a melee or ranged attack. Some features allow you to make more than one attack when you take this action."},
+ {name:"Cast a Spell",description:"Cast a spell with a casting time of 1 action. Follow the spell components, range, targets, duration, and concentration rules."},
  {name:"Dash",description:"You gain extra movement for the current turn equal to your speed, after applying any modifiers."},
- {name:"Disengage",description:"Your movement doesn’t provoke opportunity attacks for the rest of the turn."},
+ {name:"Disengage",description:"Your movement does not provoke opportunity attacks for the rest of the turn."},
  {name:"Dodge",description:"Until the start of your next turn, attack rolls against you have disadvantage if you can see the attacker, and you make Dexterity saving throws with advantage. You lose this benefit if incapacitated or if your speed becomes 0."},
- {name:"Grapple",description:"When you take the Attack action, you can replace one attack with a special melee attack: a Strength (Athletics) check contested by the target’s Strength (Athletics) or Dexterity (Acrobatics)."},
- {name:"Help",description:"You help another creature with an ability check, or give an ally advantage on its next attack against a creature within 5 feet of you, if the attack happens before your next turn."},
+ {name:"Help",description:"You can aid another creature with an ability check, or distract a creature within 5 feet of you to give an ally advantage on its next attack against it."},
  {name:"Hide",description:"Make a Dexterity (Stealth) check to attempt to hide, following the normal hiding rules."},
- {name:"Improvise",description:"You can improvise an action not described elsewhere. The DM determines whether it is possible and what kind of roll is required."},
- {name:"Influence",description:"Attempt to influence a creature through conversation, social interaction, or other means determined by the DM."},
- {name:"Magic",description:"Cast a spell, activate a magic item, or use a magical feature according to its casting time and rules."},
  {name:"Ready",description:"Choose an observable trigger and an action to take in response. You use your reaction when the trigger occurs; readied spells require concentration."},
- {name:"Search",description:"Make a Wisdom (Perception) or Intelligence (Investigation) check to find something, as determined by the DM."},
- {name:"Shove",description:"When you take the Attack action, you can replace one attack with a special melee attack to push a creature 5 feet away or knock it prone."},
- {name:"Study",description:"Make an Intelligence check to recall lore or information about a creature, object, or situation."},
- {name:"Utilize",description:"Use an object that requires your action. Interacting with one object for free is normally allowed once on your turn."}
+ {name:"Search",description:"Devote your attention to finding something. The DM might call for a Wisdom (Perception) or Intelligence (Investigation) check."},
+ {name:"Use an Object",description:"Use an object that requires your action. Interacting with one object for free is normally allowed once on your turn."}
 ];
 const text=v=>String(v||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
 const mod=n=>Math.floor((Number(n||10)-10)/2);
@@ -51,6 +46,7 @@ export function buildActionSections(c){
  if(!attacks.some(a=>/unarmed strike/i.test(a.name||""))){const monkLevel=Object.entries(classLevels).find(([cls])=>text(cls)==="monk")?.[1]||0;const ability=monkLevel?Math.max(mod(c.abilities.DEX),mod(c.abilities.STR)):mod(c.abilities.STR);attacks.push({id:"unarmed-strike",name:"Unarmed Strike",kind:"Melee Attack",range:"5 ft. reach",attackBonus:(Number(c.proficiencyBonus)||2)+ability,damage:monkLevel?"1d"+dieFor(monkLevel):"1",damageModifier:ability,damageType:"bludgeoning",source:monkLevel?"Monk Martial Arts":"Unarmed"});}
  for(const sp of spells){if(sp.attack===true||sp.isAttack===true||sp.damage||sp.damageDice){const profile=(c.spellcastingProfiles||[]).find(p=>(p.spells||[]).some(x=>x.name===sp.name));attacks.push({id:"spell-"+sp.spellcastingClass+"-"+sp.name,name:sp.name,kind:Number(sp.level)===0?"Cantrip":"Spell",range:sp.range||"",attackBonus:Number(sp.attackBonus??profile?.attackBonus??c.spellcasting?.attackBonus??0),damage:sp.damage||sp.damageDice||"1d6",damageType:sp.damageType||"",source:"Spell"});}}
  const actions=[...CORE_COMBAT_ACTIONS.map(a=>row(a.name,"Action",a.description))];
+ const specialAttacks=[row("Grapple","Special Melee Attack","When you take the Attack action, you can replace one attack with a grapple attempt. Make a Strength (Athletics) check contested by the target Strength (Athletics) or Dexterity (Acrobatics)."),row("Shove","Special Melee Attack","When you take the Attack action, you can replace one attack with a shove attempt. Make a Strength (Athletics) check contested by the target Strength (Athletics) or Dexterity (Acrobatics) to push it 5 feet or knock it prone.")];
  const bonus=[],reactions=[],other=[];
  const add=(target,name,type,description,source,extra={})=>target.push(row(name,type,description,source,extra));
  add(reactions,"Opportunity Attack","Reaction","When a hostile creature you can see leaves your reach, you can use your reaction to make one melee attack against it.");
@@ -95,9 +91,9 @@ export function buildActionSections(c){
   else continue;
   add(target,f.name,type,f.description||"Character feature. Consult the feature rules for its exact use and limitations.","Character feature");
  }
- const actionCount=Object.entries(classLevels).some(([cls,lvl])=>["fighter","ranger","paladin","barbarian","monk"].includes(text(cls))&&lvl>=5)?1:0;
+ const actionCount=Object.entries(classLevels).reduce((best,[cls,lvl])=>Math.max(best,text(cls)==="fighter"?(lvl>=11?2:lvl>=5?1:0):(["ranger","paladin","barbarian","monk"].includes(text(cls))&&lvl>=5?1:0)),0);
  const hasExtra=features.some(f=>/extra attack/i.test(f.name));
  const attacksPerAction=1+Math.max(0,actionCount||((hasExtra||hasFeature("Extra Attack"))?1:0));
- return {attacks,actions,bonusActions:bonus,reactions,other,attacksPerAction,totalLevel,spells};
+ return {attacks,actions,specialAttacks,bonusActions:bonus,reactions,other,attacksPerAction,totalLevel,spells};
 }
 export {CORE_COMBAT_ACTIONS};
