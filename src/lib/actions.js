@@ -19,7 +19,7 @@ const levels=c=>{
  return out;
 };
 const dieFor=(level)=>level>=17?10:level>=11?8:level>=5?6:4;
-const scaleDice=(formula,multiplier)=>String(formula||"").replace(/^(\\d*)d(\\d+)/i,(_,n,die)=>(Math.max(1,Number(n||1)*multiplier))+"d"+die);
+const scaleDice=(formula,multiplier)=>String(formula||"").replace(/^(\d*)d(\d+)/i,(_,n,die)=>(Math.max(1,Number(n||1)*multiplier))+"d"+die);
 function row(name,type,description,source="2014 rules",extra={}){return {name,type,description,source,...extra};}
 export function buildActionSections(c){
  const classLevels=levels(c),totalLevel=Object.values(classLevels).reduce((a,b)=>a+b,0)||Number(c.level)||1;
