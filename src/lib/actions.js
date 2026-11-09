@@ -49,6 +49,7 @@ export function buildActionSections(c){
    if(lvl>=6&&sub.includes("open hand")){add(other,"Wholeness of Body","Action","Regain hit points equal to three times your monk level. Once used, it recharges after a long rest.","Way of the Open Hand");}
   }
   if(text(cls)==="rogue"){
+   if(lvl>=1)add(other,"Sneak Attack","Special","Once per turn, you can deal extra damage to one creature you hit with an attack if you have advantage on the attack roll, or another enemy of the target is within 5 feet of it and you don’t have disadvantage. The attack must use a finesse or ranged weapon. The extra damage scales with rogue level.","Rogue",{damage:"1d"+Math.ceil(lvl/2)+"",uses:"Once per turn"});
    if(lvl>=2)add(bonus,"Cunning Action","Bonus Action","You can take the Dash, Disengage, or Hide action as a bonus action.","Rogue");
    if(lvl>=5)add(reactions,"Uncanny Dodge","Reaction","When an attacker you can see hits you with an attack, use your reaction to halve the attack’s damage against you.","Rogue");
    if(lvl>=3&&sub.includes("thief")){add(bonus,"Fast Hands","Bonus Action","Use the bonus action granted by Cunning Action to make a Dexterity (Sleight of Hand) check, use thieves’ tools to disarm a trap or open a lock, or take the Use an Object action.","Thief");}
@@ -66,6 +67,7 @@ export function buildActionSections(c){
   if(text(cls)==="bard"&&lvl>=1)add(bonus,"Bardic Inspiration","Bonus Action","Choose one creature other than yourself within 60 feet that can hear you. It gains one Bardic Inspiration die.","Bard");
   if(text(cls)==="cleric"&&lvl>=2)add(other,"Channel Divinity","Special","Use one of your Channel Divinity options. The available options depend on your cleric domain.","Cleric");
  }
+ for(const custom of c.actions||[]){const type=text(custom.type);const target=type.includes("bonus")?bonus:type.includes("reaction")?reactions:type.includes("other")?other:actions;add(target,custom.name||"Character action",custom.type||"Action",custom.description||"Character-specific action.",custom.source||"Character");}
  // Imported feature text is retained and displayed, but only known activations are categorized automatically.
  const knownNames=new Set([...actions,...bonus,...reactions,...other].map(x=>text(x.name)));
  for(const f of features){const n=text(f.name);if(!n||knownNames.has(n))continue;
