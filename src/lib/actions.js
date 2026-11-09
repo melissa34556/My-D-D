@@ -32,6 +32,7 @@ export function buildActionSections(c){
  const featureDescription=name=>features.find(f=>text(f.name)===text(name))?.description||"";
  const attacks=[...(c.attacks||[])].map((a,i)=>({...a,id:a.id||"stored-"+i,source:a.source||"Character attack",kind:a.kind||(/spell/i.test(a.type||"")?"Spell":/ranged/i.test(a.type||"")?"Ranged Weapon":"Melee Weapon")}));
  const spells=allSpells(c);
+ if(!attacks.some(a=>/unarmed strike/i.test(a.name||""))){const monkLevel=Object.entries(classLevels).find(([cls])=>text(cls)==="monk")?.[1]||0;const ability=monkLevel?Math.max(mod(c.abilities.DEX),mod(c.abilities.STR)):mod(c.abilities.STR);attacks.push({id:"unarmed-strike",name:"Unarmed Strike",kind:"Melee Attack",range:"5 ft. reach",attackBonus:(Number(c.proficiencyBonus)||2)+ability,damage:"1d"+(monkLevel?dieFor(monkLevel):1)+"+"+ability,damageType:"bludgeoning",source:monkLevel?"Monk Martial Arts":"Unarmed"});}
  for(const sp of spells){if(sp.attack===true||sp.isAttack===true||sp.damage||sp.damageDice){const profile=(c.spellcastingProfiles||[]).find(p=>(p.spells||[]).some(x=>x.name===sp.name));attacks.push({id:"spell-"+sp.spellcastingClass+"-"+sp.name,name:sp.name,kind:Number(sp.level)===0?"Cantrip":"Spell",range:sp.range||"",attackBonus:Number(sp.attackBonus??profile?.attackBonus??c.spellcasting?.attackBonus??0),damage:sp.damage||sp.damageDice||"1d6",damageType:sp.damageType||"",source:"Spell"});}}
  const actions=[...CORE_COMBAT_ACTIONS.map(a=>row(a.name,"Action",a.description))];
  const bonus=[],reactions=[],other=[];
@@ -41,7 +42,6 @@ export function buildActionSections(c){
  for(const [cls,lvl] of Object.entries(classLevels)){
   const sub=text(subclassFor(cls));
   if(text(cls)==="monk"){
-   add(other,"Unarmed Strike","Melee Attack","You can make an unarmed strike using Strength or Dexterity. On a hit, deal your Martial Arts die + the chosen ability modifier in bludgeoning damage.","Monk",{damage:"1d"+dieFor(lvl)+"+"+Math.max(mod(c.abilities.DEX),mod(c.abilities.STR)),attackBonus:(Number(c.proficiencyBonus)||2)+Math.max(mod(c.abilities.DEX),mod(c.abilities.STR))});
    if(lvl>=2){add(bonus,"Flurry of Blows","Bonus Action","Immediately after you take the Attack action on your turn, you can spend 1 ki point to make two unarmed strikes as a bonus action.","Monk · Ki");add(bonus,"Patient Defense","Bonus Action","You can spend 1 ki point to take the Dodge action as a bonus action.","Monk · Ki");add(bonus,"Step of the Wind","Bonus Action","You can spend 1 ki point to take the Disengage or Dash action as a bonus action, and your jump distance is doubled for the turn.","Monk · Ki");}
    if(lvl>=3){add(reactions,"Deflect Missiles","Reaction","Use your reaction to reduce damage from a ranged weapon attack. If you reduce it to 0, you can catch the missile; spending 1 ki point lets you make a ranged attack with it.","Monk");}
    if(lvl>=3&&sub.includes("open hand")){add(bonus,"Open Hand Technique","Feature","When you hit with one of the attacks granted by Flurry of Blows, you can impose one of the Open Hand Technique effects.","Way of the Open Hand");}
@@ -49,7 +49,7 @@ export function buildActionSections(c){
    if(lvl>=6&&sub.includes("open hand")){add(other,"Wholeness of Body","Action","Regain hit points equal to three times your monk level. Once used, it recharges after a long rest.","Way of the Open Hand");}
   }
   if(text(cls)==="rogue"){
-   if(lvl>=1)add(other,"Sneak Attack","Special","Once per turn, you can deal extra damage to one creature you hit with an attack if you have advantage on the attack roll, or another enemy of the target is within 5 feet of it and you don’t have disadvantage. The attack must use a finesse or ranged weapon. The extra damage scales with rogue level.","Rogue",{damage:"1d"+Math.ceil(lvl/2)+"",uses:"Once per turn"});
+   if(lvl>=1)add(other,"Sneak Attack","Special","Once per turn, you can deal extra damage to one creature you hit with an attack if you have advantage on the attack roll, or another enemy of the target is within 5 feet of it and you don’t have disadvantage. The attack must use a finesse or ranged weapon. The extra damage scales with rogue level.","Rogue",{damage:Math.ceil(lvl/2)+"d6",uses:"Once per turn"});
    if(lvl>=2)add(bonus,"Cunning Action","Bonus Action","You can take the Dash, Disengage, or Hide action as a bonus action.","Rogue");
    if(lvl>=5)add(reactions,"Uncanny Dodge","Reaction","When an attacker you can see hits you with an attack, use your reaction to halve the attack’s damage against you.","Rogue");
    if(lvl>=3&&sub.includes("thief")){add(bonus,"Fast Hands","Bonus Action","Use the bonus action granted by Cunning Action to make a Dexterity (Sleight of Hand) check, use thieves’ tools to disarm a trap or open a lock, or take the Use an Object action.","Thief");}
