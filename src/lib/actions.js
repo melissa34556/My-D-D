@@ -40,7 +40,7 @@ export function buildActionSections(c){
   if(required&&!cls&&Number(c.level||1)<required)return false;
   return true;
  };
- const databaseActions=contentEntries.filter(e=>e.actionData&&actionTypeOf(e)&&eligible(e));
+ const databaseActions=[...contentEntries.filter(e=>e.actionData&&actionTypeOf(e)&&eligible(e)),...features.filter(f=>f.actionData?.actionType).map(f=>({name:f.name,description:f.description,source:f.source||"Character feature",actionData:f.actionData})).filter(eligible)];
  const spells=allSpells(c);
  const spellAttacks={
   "eldritch blast":{damage:"1d10",range:"120 ft.",kind:"Cantrip"},
@@ -92,6 +92,8 @@ export function buildActionSections(c){
   if(text(cls)==="ranger"&&lvl>=3&&sub.includes("gloom stalker"))add(other,"Dread Ambusher","Feature","At the start of your first turn of each combat, your walking speed increases by 10 feet until the end of that turn. If you take the Attack action, you can make one additional weapon attack as part of that action; if it hits, it deals an extra 1d8 damage.","Gloom Stalker");
   if(text(cls)==="fighter"&&lvl>=2)add(other,"Action Surge","Special","You can take one additional action on your turn. Once used, it recharges after a short or long rest.","Fighter");
   if(text(cls)==="fighter"&&lvl>=5)add(other,"Extra Attack","Feature","You can attack twice, instead of once, whenever you take the Attack action on your turn.","Fighter");
+  if(text(cls)==="bard"&&lvl>=6&&sub.includes("valor"))add(other,"Extra Attack","Feature","You can attack twice, instead of once, whenever you take the Attack action on your turn.","College of Valor");
+  if(text(cls)==="wizard"&&lvl>=6&&sub.includes("bladesinger"))add(other,"Extra Attack","Feature","You can attack twice, instead of once, whenever you take the Attack action on your turn. You can replace one attack with a cantrip.","Bladesinger");
   if(text(cls)==="barbarian"&&lvl>=2)add(bonus,"Reckless Attack","Feature","When you make your first attack on your turn, you can decide to attack recklessly, giving you advantage on Strength-based melee weapon attack rolls using Strength during this turn, but attack rolls against you have advantage until your next turn.","Barbarian");
   if(text(cls)==="barbarian"&&lvl>=3&&sub.includes("berserker"))add(bonus,"Frenzy","Bonus Action","While raging, you can make a single melee weapon attack as a bonus action on each of your turns after this one. You suffer one level of exhaustion when your rage ends.","Path of the Berserker");
   if(text(cls)==="paladin"&&lvl>=2)add(other,"Divine Smite","Special","When you hit a creature with a melee weapon attack, expend a spell slot to deal radiant damage in addition to the weapon’s damage.","Paladin");
