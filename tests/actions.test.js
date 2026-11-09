@@ -51,3 +51,19 @@ test("Equipped imported weapons become attacks using their imported metadata",()
  assert.equal(weapon.damage,"1d8");
  assert.equal(weapon.damageModifier,3);
 });
+
+test("2014 class features appear at their class levels",()=>{
+ const fighter=buildActionSections({className:"Fighter",level:2,abilities:{STR:16,DEX:12},proficiencyBonus:2,features:[]});
+ assert.ok(fighter.bonusActions.some(x=>x.name==="Second Wind"));
+ assert.ok(fighter.other.some(x=>x.name==="Action Surge"));
+ const barbarian=buildActionSections({className:"Barbarian",level:1,abilities:{STR:16,DEX:12},proficiencyBonus:2,features:[]});
+ assert.ok(barbarian.bonusActions.some(x=>x.name==="Rage"));
+ const valor=buildActionSections({className:"Bard",level:6,subclass:"College of Valor",abilities:{STR:10,DEX:14},proficiencyBonus:3,features:[]});
+ assert.equal(valor.attacksPerAction,2);
+});
+test("Spell attacks are not duplicated and cantrip beams scale by total character level",()=>{
+ const c=buildActionSections({className:"Warlock",level:11,abilities:{STR:10,DEX:14,CHA:18},proficiencyBonus:4,features:[],spellcastingProfiles:[{name:"Warlock",attackBonus:8,spells:[{name:"Eldritch Blast",level:0,attack:true,damage:"1d10"}]}]});
+ const beams=c.attacks.filter(x=>x.name==="Eldritch Blast");
+ assert.equal(beams.length,1);
+ assert.equal(beams[0].damage,"3d10");
+});
