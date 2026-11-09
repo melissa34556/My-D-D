@@ -5,7 +5,7 @@ import {buildActionSections} from "../src/lib/actions.js";
 test("Actions are assembled from character-specific class and level features",()=>{
  const monk=buildActionSections({className:"Monk",level:5,abilities:{STR:10,DEX:16},proficiencyBonus:3,attacks:[],features:[]});
  assert.equal(monk.attacksPerAction,2);
- assert.ok(monk.attacks.some(x=>x.name==="Unarmed Strike"&&x.damage==="1d6+3"));
+ assert.ok(monk.attacks.some(x=>x.name==="Unarmed Strike"&&x.damage==="1d6"&&x.damageModifier===3));
  assert.ok(monk.bonusActions.some(x=>x.name==="Flurry of Blows"));
  assert.ok(monk.reactions.some(x=>x.name==="Deflect Missiles"));
  const rogue=buildActionSections({className:"Rogue",level:7,subclass:"Thief",abilities:{STR:10,DEX:18},proficiencyBonus:3,attacks:[],features:[]});
