@@ -27,6 +27,20 @@ export function buildActionSections(c){
  const hasFeature=name=>features.some(f=>text(f.name)===text(name));
  const featureDescription=name=>features.find(f=>text(f.name)===text(name))?.description||"";
  const attacks=[...(c.attacks||[])].map((a,i)=>({...a,id:a.id||"stored-"+i,source:a.source||"Character attack",kind:a.kind||(/spell/i.test(a.type||"")?"Spell":/ranged/i.test(a.type||"")?"Ranged Weapon":"Melee Weapon")}));
+ const contentEntries=c.contentEntries||[];
+ const actionTypeOf=entry=>String(entry.actionData?.actionType||entry.actionData?.activation||"").toLowerCase();
+ const eligible=entry=>{
+  const d=entry.actionData||{},cls=String(d.className||"").toLowerCase(),sub=String(d.subclass||"").toLowerCase(),species=String(d.species||"").toLowerCase(),feat=String(d.feat||"").toLowerCase();
+  if(cls&&!Object.keys(classLevels).some(x=>text(x)===text(cls)))return false;
+  if(sub&&!Object.values(c.subclassesByClass||{}).some(x=>text(x)===text(sub))&&text(c.subclass)!==text(sub))return false;
+  if(species&&text(c.species)!==text(species))return false;
+  if(feat&&!features.some(x=>text(x.name||x)===text(feat)))return false;
+  const required=Number(d.requiredLevel||entry.level||0);
+  if(required&&cls&&Number(classLevels[Object.keys(classLevels).find(x=>text(x)===text(cls))]||0)<required)return false;
+  if(required&&!cls&&Number(c.level||1)<required)return false;
+  return true;
+ };
+ const databaseActions=contentEntries.filter(e=>e.actionData&&actionTypeOf(e)&&eligible(e));
  const spells=allSpells(c);
  const spellAttacks={
   "eldritch blast":{damage:"1d10",range:"120 ft.",kind:"Cantrip"},
@@ -50,6 +64,11 @@ export function buildActionSections(c){
  const bonus=[],reactions=[],other=[];
  const add=(target,name,type,description,source,extra={})=>target.push(row(name,type,description,source,extra));
  add(reactions,"Opportunity Attack","Reaction","When a hostile creature you can see leaves your reach, you can use your reaction to make one melee attack against it.");
+ for(const entry of databaseActions){
+  const d=entry.actionData||{},kind=String(d.actionType||"Other").toLowerCase();
+  const target=kind.includes("bonus")?bonus:kind.includes("reaction")?reactions:kind.includes("action")&&!kind.includes("other")?actions:other;
+  if(![...actions,...bonus,...reactions,...other].some(x=>text(x.name)===text(entry.name)))add(target,entry.name,d.actionType||"Feature",entry.description||"Imported character option.",entry.source||"Content Library",{uses:d.uses,recharge:d.recharge,damage:d.damage,damageType:d.damageType,range:d.range,attackBonus:d.attackBonus,contentId:entry.id});
+ }
  // Universal and class-derived feature catalog; a feature is only surfaced when the character has the required class/subclass level.
  for(const [cls,lvl] of Object.entries(classLevels)){
   const sub=text(subclassFor(cls));
