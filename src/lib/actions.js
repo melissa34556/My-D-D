@@ -74,7 +74,7 @@ export function buildActionSections(c){
  const actions=[...CORE_COMBAT_ACTIONS.map(a=>row(a.name,"Action",a.description))];
  const specialAttacks=[row("Grapple","Special Melee Attack","When you take the Attack action, you can replace one attack with a grapple attempt. Make a Strength (Athletics) check contested by the target Strength (Athletics) or Dexterity (Acrobatics)."),row("Shove","Special Melee Attack","When you take the Attack action, you can replace one attack with a shove attempt. Make a Strength (Athletics) check contested by the target Strength (Athletics) or Dexterity (Acrobatics) to push it 5 feet or knock it prone.")];
  const bonus=[],reactions=[],other=[];
- const add=(target,name,type,description,source,extra={})=>target.push(row(name,type,description,source,extra));
+ const add=(target,name,type,description,source,extra={})=>{const existing=target.findIndex(x=>text(x.name)===text(name));const next=row(name,type,description,source,extra);if(existing>=0){if(target[existing].contentId)target[existing]=next;return;}target.push(next);};
  add(reactions,"Opportunity Attack","Reaction","When a hostile creature you can see leaves your reach, you can use your reaction to make one melee attack against it.");
  for(const entry of databaseActions){
   const d=entry.actionData||{},kind=String(d.actionType||"Other").toLowerCase();
@@ -100,7 +100,7 @@ export function buildActionSections(c){
    if(lvl>=7&&sub.includes("thief")){add(other,"Second-Story Work","Feature","Climbing no longer costs you extra movement, and you can use your Dexterity modifier when determining the distance you jump.","Thief");}
   }
   if(text(cls)==="warlock"&&lvl>=1&&sub.includes("fiend"))add(other,"Dark One’s Blessing","Special","When you reduce a hostile creature to 0 hit points, you gain temporary hit points equal to your Charisma modifier + your warlock level (minimum 1).","The Fiend");
-  if(text(cls)==="warlock"&&lvl>=6&&sub.includes("fiend"))add(reactions,"Dark One’s Own Luck","Reaction","When you make an ability check or saving throw, add a d10 to the roll. Once used, recharge after a short or long rest.","The Fiend");
+  if(text(cls)==="warlock"&&lvl>=6&&sub.includes("fiend"))add(other,"Dark One’s Own Luck","Reaction","When you make an ability check or saving throw, add a d10 to the roll. Once used, recharge after a short or long rest.","The Fiend");
   if(text(cls)==="ranger"&&lvl>=3&&sub.includes("gloom stalker"))add(other,"Dread Ambusher","Feature","At the start of your first turn of each combat, your walking speed increases by 10 feet until the end of that turn. If you take the Attack action, you can make one additional weapon attack as part of that action; if it hits, it deals an extra 1d8 damage.","Gloom Stalker");
   if(text(cls)==="fighter"&&lvl>=2)add(other,"Action Surge","Special","You can take one additional action on your turn. Once used, it recharges after a short or long rest.","Fighter");
   if(text(cls)==="fighter"&&lvl>=5)add(other,"Extra Attack","Feature","You can attack twice, instead of once, whenever you take the Attack action on your turn.","Fighter");
