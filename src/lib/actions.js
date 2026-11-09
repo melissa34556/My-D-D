@@ -16,6 +16,7 @@ const CORE_COMBAT_ACTIONS=[
  {name:"Utilize",description:"Use an object that requires your action. Interacting with one object for free is normally allowed once on your turn."}
 ];
 const text=v=>String(v||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+const mod=n=>Math.floor((Number(n||10)-10)/2);
 const allSpells=c=>[...(c.spellcastingProfiles||[]).flatMap(p=>(p.spells||[]).map(s=>({...s,spellcastingClass:p.name||p.sourceClass||""}))),...(c.spellcastingProfiles?.length?[]:(c.spellcasting?.spells||[]))];
 const levels=c=>{
  const out={};for(const [name,data] of Object.entries(c.hitDiceByClass||{}))out[name]=Number(data.total)||0;
