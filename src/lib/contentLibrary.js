@@ -4,6 +4,7 @@ async function transact(store,mode,action){const db=await openDB();return new Pr
 export async function getContent(){const db=await openDB();return new Promise((resolve,reject)=>{const req=db.transaction(STORE).objectStore(STORE).getAll();req.onsuccess=()=>{db.close();resolve(req.result||[]);};req.onerror=()=>{db.close();reject(req.error);};});}
 export async function saveContent(records){const db=await openDB();return new Promise((resolve,reject)=>{const tx=db.transaction(STORE,"readwrite"),os=tx.objectStore(STORE);records.forEach(x=>os.put(x));tx.oncomplete=()=>{db.close();resolve(records.length);};tx.onerror=()=>{db.close();reject(tx.error);};});}
 export async function removeContent(id){return transact(STORE,"readwrite",os=>os.delete(id));}
+export async function getActionContent(){const records=await getContent();return records.filter(x=>["Classes","Species","Feats","Equipment","Spells","Rules","Other"].includes(x.category));}
 export async function getSources(){const db=await openDB();return new Promise((resolve,reject)=>{const req=db.transaction(SOURCES).objectStore(SOURCES).getAll();req.onsuccess=()=>{db.close();resolve(req.result||[]);};req.onerror=()=>{db.close();reject(req.error);};});}
 export async function saveSource(source){return transact(SOURCES,"readwrite",os=>os.put(source));}
 export async function removeSource(id){return transact(SOURCES,"readwrite",os=>os.delete(id));}
