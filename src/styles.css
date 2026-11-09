@@ -429,3 +429,13 @@
 .attunement-slots .filled{border-color:#6a8796;background:#1b2c35}
 .attunement-slots button{font-size:10px}
 @media(max-width:420px){.inventory-summary{gap:5px}.inventory-summary>div{padding:8px}.inventory-summary b{font-size:15px}.inventory-add,.inventory-item-controls{grid-template-columns:1fr}.inventory-item-values{font-size:9px}.inventory-section-heading>span{font-size:8px}.attunement-slots{gap:5px}}
+
+
+/* Inventory hierarchy controls */
+.inventory-collapse{flex:0 0 22px;width:22px;height:28px;padding:0;border:0;background:transparent;color:#aebdc5;font-size:18px}
+.inventory-collapsed-note{display:block;margin:5px 0 0 31px;color:#82939e;font-size:10px}
+.inventory-item-top .inventory-item-main{min-width:0}
+.inventory-item-top .inventory-item-main .text-link{overflow-wrap:anywhere}
+.inventory-add-panel .inventory-add{grid-template-columns:repeat(2,minmax(0,1fr))}
+.inventory-add-panel .inventory-add input,.inventory-add-panel .inventory-add select{min-height:38px}
+@media(max-width:420px){.inventory-add-panel .inventory-add{grid-template-columns:1fr}}
