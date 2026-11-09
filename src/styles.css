@@ -309,3 +309,39 @@
  .play-screen .columns[data-active-section="Abilities"] .ornate-ability{min-height:134px!important}
  .play-screen .columns[data-active-section="Abilities"] .panel h2{font-size:17px!important}
 }
+
+
+/* Section chooser and skill list, modeled on the supplied companion screenshots */
+.section-menu-backdrop{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.78)}
+.section-menu-modal{width:min(100%,640px);max-height:calc(100dvh - 36px);overflow-y:auto;background:#263640;border-radius:3px;padding:18px 20px 24px;box-shadow:0 14px 50px #0009}
+.section-menu-head{display:flex;justify-content:flex-start;align-items:center;margin:0 0 14px}
+.section-menu-head button{border:0;background:transparent;color:#f4f7f8;font-size:48px;line-height:.9;padding:0 8px}
+.section-menu-modal>button{width:100%;min-height:72px;display:flex;align-items:center;gap:20px;text-align:left;margin:0 0 14px;padding:12px 22px;border:1px solid transparent;border-radius:7px;background:#202d37;color:#f1f4f6}
+.section-menu-modal>button span{width:42px;flex:0 0 42px;text-align:center;font-size:31px;color:#9aabb6}
+.section-menu-modal>button b{font-size:20px;font-weight:700}
+.section-menu-modal>button.selected{border-color:#d71920;background:#111a20}
+.section-menu-toggle{margin-left:auto;align-self:stretch;min-width:54px;border:0;border-left:1px solid #40515c;background:transparent;color:#e4ebef;font-size:25px}
+.skills-table{width:100%;display:flex;flex-direction:column}
+.skills-table-head,.skills-table-row{display:grid;grid-template-columns:42px 48px 48px minmax(0,1fr) 66px;align-items:center;column-gap:6px}
+.skills-table-head{min-height:39px;border-bottom:1px solid #29343b;color:#9aa8b2;font-size:11px;text-transform:uppercase}
+.skills-table-head span:last-child{text-align:center}
+.skills-table-row{min-height:55px;border-bottom:1px solid #29343b}
+.skills-table-row button{color:#e8edf0}
+.skill-pin,.skill-prof{border:0;background:transparent;display:grid;place-items:center;min-width:36px;min-height:44px;padding:0}
+.skill-pin{font-size:22px;color:#dfe6ea!important;transform:rotate(-38deg)}
+.skill-pin.pinned{color:#e7edf1!important;text-shadow:0 0 7px #e7edf155}
+.skill-prof i{display:block;width:22px;height:22px;border:2px dotted #9aaab4;border-radius:50%;background:transparent}
+.skill-prof.proficient i,.skill-prof.half i{border:0;background:#f0f3f5}
+.skill-prof.expert i{width:23px;height:23px;border:2px solid #f0f3f5;background:#f0f3f5;box-shadow:inset 0 0 0 3px #202b34}
+.skill-ability{font-size:13px;color:#e3e9ed}
+.skill-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left;border:0;background:transparent;font-size:14px;padding:8px 0}
+.skill-bonus{justify-self:end;min-width:62px;min-height:30px;padding:3px 5px;border:1px solid #40515b;border-radius:4px;background:#111a20;font-size:14px;text-align:center}
+.skills-table-row:has(.skill-pin.pinned){background:rgba(43,59,69,.35)}
+@media(max-width:620px){
+ .section-menu-modal{padding:16px 20px 20px}
+ .section-menu-modal>button{min-height:72px;margin-bottom:14px;padding:10px 18px;gap:16px}
+ .section-menu-modal>button b{font-size:19px}
+ .skills-table-head,.skills-table-row{grid-template-columns:38px 42px 44px minmax(0,1fr) 62px;column-gap:5px}
+ .skill-name{font-size:14px}
+ .skill-bonus{min-width:58px}
+}
