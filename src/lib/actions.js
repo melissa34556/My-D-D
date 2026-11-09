@@ -32,7 +32,22 @@ export function buildActionSections(c){
  const featureDescription=name=>features.find(f=>text(f.name)===text(name))?.description||"";
  const attacks=[...(c.attacks||[])].map((a,i)=>({...a,id:a.id||"stored-"+i,source:a.source||"Character attack",kind:a.kind||(/spell/i.test(a.type||"")?"Spell":/ranged/i.test(a.type||"")?"Ranged Weapon":"Melee Weapon")}));
  const spells=allSpells(c);
- if(!attacks.some(a=>/unarmed strike/i.test(a.name||""))){const monkLevel=Object.entries(classLevels).find(([cls])=>text(cls)==="monk")?.[1]||0;const ability=monkLevel?Math.max(mod(c.abilities.DEX),mod(c.abilities.STR)):mod(c.abilities.STR);attacks.push({id:"unarmed-strike",name:"Unarmed Strike",kind:"Melee Attack",range:"5 ft. reach",attackBonus:(Number(c.proficiencyBonus)||2)+ability,damage:"1d"+(monkLevel?dieFor(monkLevel):1)+"+"+ability,damageType:"bludgeoning",source:monkLevel?"Monk Martial Arts":"Unarmed"});}
+ const spellAttacks={
+  "eldritch blast":{damage:"1d10",range:"120 ft.",kind:"Cantrip"},
+  "chill touch":{damage:"1d8",range:"120 ft.",kind:"Cantrip"},
+  "fire bolt":{damage:"1d10",range:"120 ft.",kind:"Cantrip"},
+  "ray of frost":{damage:"1d8",range:"60 ft.",kind:"Cantrip"},
+  "shocking grasp":{damage:"1d8",range:"Touch",kind:"Cantrip"},
+  "thorn whip":{damage:"1d6",range:"30 ft.",kind:"Cantrip"},
+  "witch bolt":{damage:"1d12",range:"30 ft.",kind:"1st Level Spell"},
+  "guiding bolt":{damage:"4d6",range:"120 ft.",kind:"1st Level Spell"},
+  "inflict wounds":{damage:"3d10",range:"Touch",kind:"1st Level Spell"},
+  "chromatic orb":{damage:"3d8",range:"90 ft.",kind:"1st Level Spell"},
+  "scorching ray":{damage:"2d6",range:"120 ft.",kind:"2nd Level Spell"},
+  "vampiric touch":{damage:"3d6",range:"Self",kind:"3rd Level Spell"}
+ };
+ for(const sp of spells){const meta=spellAttacks[text(sp.name)];if(meta&&!attacks.some(a=>text(a.name)===text(sp.name))){const profile=(c.spellcastingProfiles||[]).find(p=>(p.spells||[]).some(x=>x.name===sp.name));const level=Number(c.level)||1;const diceScale=level>=17?4:level>=11?3:level>=5?2:1;let damage=meta.damage;if(text(sp.name)==="eldritch blast")damage="1d10";else if(text(sp.name)==="chill touch"||text(sp.name)==="fire bolt"||text(sp.name)==="ray of frost"||text(sp.name)==="shocking grasp"||text(sp.name)==="thorn whip"){const sides=Number(damage.split("d")[1]);damage=diceScale+"d"+sides;}attacks.push({id:"spell-"+sp.name,name:sp.name,kind:meta.kind,range:meta.range,attackBonus:Number(profile?.attackBonus??sp.attackBonus??c.spellcasting?.attackBonus??0),damage,damageType:sp.damageType||"",source:sp.spellcastingClass||profile?.name||"Spell"});}}
+ if(!attacks.some(a=>/unarmed strike/i.test(a.name||""))){const monkLevel=Object.entries(classLevels).find(([cls])=>text(cls)==="monk")?.[1]||0;const ability=monkLevel?Math.max(mod(c.abilities.DEX),mod(c.abilities.STR)):mod(c.abilities.STR);attacks.push({id:"unarmed-strike",name:"Unarmed Strike",kind:"Melee Attack",range:"5 ft. reach",attackBonus:(Number(c.proficiencyBonus)||2)+ability,damage:monkLevel?"1d"+dieFor(monkLevel):"1",damageModifier:ability,damageType:"bludgeoning",source:monkLevel?"Monk Martial Arts":"Unarmed"});}
  for(const sp of spells){if(sp.attack===true||sp.isAttack===true||sp.damage||sp.damageDice){const profile=(c.spellcastingProfiles||[]).find(p=>(p.spells||[]).some(x=>x.name===sp.name));attacks.push({id:"spell-"+sp.spellcastingClass+"-"+sp.name,name:sp.name,kind:Number(sp.level)===0?"Cantrip":"Spell",range:sp.range||"",attackBonus:Number(sp.attackBonus??profile?.attackBonus??c.spellcasting?.attackBonus??0),damage:sp.damage||sp.damageDice||"1d6",damageType:sp.damageType||"",source:"Spell"});}}
  const actions=[...CORE_COMBAT_ACTIONS.map(a=>row(a.name,"Action",a.description))];
  const bonus=[],reactions=[],other=[];
