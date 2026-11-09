@@ -125,7 +125,7 @@ export function buildActionSections(c){
   else continue;
   add(target,f.name,type,f.description||"Character feature. Consult the feature rules for its exact use and limitations.","Character feature");
  }
- const actionCount=Object.entries(classLevels).reduce((best,[cls,lvl])=>Math.max(best,text(cls)==="fighter"?(lvl>=11?2:lvl>=5?1:0):(["ranger","paladin","barbarian","monk"].includes(text(cls))&&lvl>=5?1:0)),0);
+ const actionCount=Object.entries(classLevels).reduce((best,[cls,lvl])=>{const sub=text(subclassFor(cls));const count=text(cls)==="fighter"?(lvl>=11?2:lvl>=5?1:0):(["ranger","paladin","barbarian","monk"].includes(text(cls))&&lvl>=5?1:0)||((text(cls)==="bard"&&lvl>=6&&sub.includes("valor"))||(text(cls)==="wizard"&&lvl>=6&&sub.includes("bladesinger"))?1:0);return Math.max(best,count);},0);
  const hasExtra=features.some(f=>/extra attack/i.test(f.name));
  const attacksPerAction=1+Math.max(0,actionCount||((hasExtra||hasFeature("Extra Attack"))?1:0));
  return {attacks,actions,specialAttacks,bonusActions:bonus,reactions,other,attacksPerAction,totalLevel,spells};
