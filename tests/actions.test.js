@@ -24,7 +24,30 @@ test("Multiclass features and spell attacks are combined without legacy labels",
 });
 test("Core combat actions use the complete 2014 list and custom actions retain their category",()=>{
  const c=buildActionSections({className:"Warlock",level:1,abilities:{STR:10,DEX:10},proficiencyBonus:2,attacks:[],features:[],actions:[{name:"Pact Feature",type:"Bonus Action",description:"A custom feature."}]});
- assert.deepEqual(c.actions.map(x=>x.name),["Attack","Dash","Disengage","Dodge","Grapple","Help","Hide","Improvise","Influence","Magic","Ready","Search","Shove","Study","Utilize"]);
+ assert.deepEqual(c.actions.map(x=>x.name),["Attack","Cast a Spell","Dash","Disengage","Dodge","Help","Hide","Ready","Search","Use an Object"]);
  assert.ok(c.bonusActions.some(x=>x.name==="Pact Feature"));
  assert.ok(c.reactions.some(x=>x.name==="Opportunity Attack"));
+});
+
+test("2014 rules keep grapple and shove as special attacks, not 2024 action names",()=>{
+ const c=buildActionSections({className:"Fighter",level:1,abilities:{STR:14,DEX:12},proficiencyBonus:2,attacks:[],features:[]});
+ assert.deepEqual(c.specialAttacks.map(x=>x.name),["Grapple","Shove"]);
+ assert.ok(!c.actions.some(x=>["Influence","Study","Utilize","Magic"].includes(x.name)));
+});
+test("Imported structured actions are shown only when their requirements match",()=>{
+ const contentEntries=[
+  {id:"m1",name:"Flurry from database",category:"Classes",description:"Spend ki.",actionData:{actionType:"Bonus Action",className:"Monk",requiredLevel:2}},
+  {id:"r1",name:"Cunning database action",category:"Classes",description:"Dash or hide.",actionData:{actionType:"Bonus Action",className:"Rogue",requiredLevel:2}}
+ ];
+ const monk=buildActionSections({className:"Monk",level:3,abilities:{STR:10,DEX:16},proficiencyBonus:2,features:[],contentEntries});
+ assert.ok(monk.bonusActions.some(x=>x.name==="Flurry from database"));
+ assert.ok(!monk.bonusActions.some(x=>x.name==="Cunning database action"));
+});
+test("Equipped imported weapons become attacks using their imported metadata",()=>{
+ const c=buildActionSections({className:"Fighter",level:1,abilities:{STR:16,DEX:12},proficiencyBonus:2,features:[],attacks:[],inventory:[{id:"sword",name:"Longsword",equipped:true,actionData:{weapon:true,weaponCategory:"Melee Weapon",damage:"1d8",damageType:"slashing",range:"5 ft.",properties:"versatile",proficient:true}}]});
+ const weapon=c.attacks.find(x=>x.name==="Longsword");
+ assert.ok(weapon);
+ assert.equal(weapon.attackBonus,5);
+ assert.equal(weapon.damage,"1d8");
+ assert.equal(weapon.damageModifier,3);
 });
