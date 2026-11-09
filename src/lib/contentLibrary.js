@@ -37,7 +37,7 @@ function jsonRecords(data,filename){
    const description=typeof v.description==="string"?v.description:typeof v.entries==="string"?v.entries:Array.isArray(v.entries)?v.entries.map(x=>typeof x==="string"?x:typeof x?.text==="string"?x.text:"").filter(Boolean).join("\n\n"):"";
    const rawLevel=v.level??v.spellLevel??v["spell-level"],level=rawLevel!==undefined&&Number.isFinite(Number(rawLevel))?Number(rawLevel):undefined;
    const key=category+":"+name.trim().toLowerCase();
-   if(!seen.has(key)){seen.add(key);out.push({id:idFor(filename,v.id||v.key||name,name),name:name.trim(),category,description,source:filename,sourceId:v.id||v.key||"",kind,...(level!==undefined?{level}:{})});}
+   if(!seen.has(key)){seen.add(key);const actionData={actionType:v.actionType||v.activationType||v.activation||v.action||"",className:v.className||v.class||v.classRequirement||"",subclass:v.subclass||v.subclassName||"",species:v.species||v.race||"",feat:v.feat||"",requiredLevel:v.requiredLevel||v.classLevel||v.levelRequirement||"",uses:v.uses||v.usage||"",recharge:v.recharge||v.recovery||"",damage:v.damage||v.damageDice||"",damageType:v.damageType||"",range:v.range||"",attackBonus:v.attackBonus||"",prerequisite:v.prerequisite||v.prerequisites||""};out.push({id:idFor(filename,v.id||v.key||name,name),name:name.trim(),category,description,source:filename,sourceId:v.id||v.key||"",kind,...(level!==undefined?{level}:{}),actionData});}
   }
   for(const [k,x] of Object.entries(v))if(x&&typeof x==="object")walk(x,k);
  };
