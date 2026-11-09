@@ -384,3 +384,48 @@
 }
 
 .actions-feature-damage{margin-top:7px;min-height:25px;padding:3px 8px;border:1px solid #40515c;border-radius:4px;background:#111a20;color:#e6edf0;font-size:11px}
+
+
+/* Character inventory: compact, equipment-led layout */
+.inventory-screen{display:flex;flex-direction:column;gap:16px}
+.inventory-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0}
+.inventory-summary>div{display:flex;flex-direction:column;gap:4px;min-width:0;padding:12px;background:#17232b;border:1px solid #30414c;border-radius:8px}
+.inventory-summary small,.inventory-section-heading small{color:#92a2ac;font-size:10px;letter-spacing:.07em}
+.inventory-summary b{font-size:18px;color:#f1f4f5}
+.inventory-capacity{padding:12px;background:#111a20;border:1px solid #2d3c45;border-radius:8px}
+.inventory-capacity>span{color:#aab7be;font-size:12px}.inventory-capacity>b{float:right;font-size:12px}
+.inventory-capacity>div{height:7px;margin:10px 0 7px;background:#293740;border-radius:10px;overflow:hidden}
+.inventory-capacity i{display:block;height:100%;background:#4e9bc0;border-radius:10px}
+.inventory-capacity small,.inventory-currency>small,.inventory-footnote{color:#8999a3;font-size:10px;line-height:1.5}
+.inventory-add-panel,.inventory-list-section,.inventory-currency,.inventory-attunement{padding:14px;background:#17232b;border:1px solid #30414c;border-radius:8px}
+.inventory-add-panel h3,.inventory-list-section h3,.inventory-currency h3,.inventory-attunement h3{margin:0 0 10px;font-size:13px;letter-spacing:.05em}
+.inventory-add{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.inventory-add input,.inventory-add select{min-width:0;width:100%;box-sizing:border-box}
+.inventory-add>button{grid-column:1/-1}
+.inventory-section-heading{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.inventory-section-heading h3{margin:0}
+.inventory-section-heading>span{font-size:9px;color:#8797a1;white-space:nowrap}
+.inventory-item{padding:10px 0;border-top:1px solid #2c3941}
+.inventory-item-top{display:flex;align-items:center;gap:8px;min-width:0}
+.inventory-item-main{display:flex;flex:1;flex-direction:column;min-width:0}
+.inventory-item-main .text-link{width:fit-content;max-width:100%;text-align:left;font-weight:600}
+.inventory-item-main small{font-size:9px;color:#81929d;letter-spacing:.04em}
+.inventory-item-values{font-size:10px;color:#c0cbd0;white-space:nowrap}
+.inventory-remove{border:0;background:transparent;color:#b7c3c9;font-size:19px}
+.inventory-edit{margin:7px 0 0 2px;color:#8fa0aa;font-size:11px}
+.inventory-edit summary{cursor:pointer;width:fit-content}
+.inventory-item-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:9px}
+.inventory-item-controls label{display:flex;flex-direction:column;gap:4px;font-size:10px;color:#9baab2}
+.inventory-item-controls input:not([type=checkbox]),.inventory-item-controls select{box-sizing:border-box;width:100%;min-width:0}
+.inventory-item-controls .inventory-check,.inventory-add .inventory-check{flex-direction:row;align-items:center;gap:6px}
+.inventory-container-content{margin:9px 0 0 10px;padding:8px 10px;border-left:2px solid #4b7185;background:#111a20;border-radius:0 6px 6px 0}
+.inventory-container-content>b{font-size:10px;color:#a6b7c0}
+.inventory-container-content .inventory-item{padding-bottom:3px}
+.inventory-currency .formgrid{margin-bottom:8px}
+.attunement-slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.attunement-slots>div{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:74px;padding:8px 4px;border:1px solid #43535d;border-radius:8px;background:#111a20;text-align:center}
+.attunement-slots>div>span{font-size:20px;color:#7696a8}
+.attunement-slots b{font-size:10px;font-weight:500;color:#aebbc2;overflow-wrap:anywhere}
+.attunement-slots .filled{border-color:#6a8796;background:#1b2c35}
+.attunement-slots button{font-size:10px}
+@media(max-width:420px){.inventory-summary{gap:5px}.inventory-summary>div{padding:8px}.inventory-summary b{font-size:15px}.inventory-add,.inventory-item-controls{grid-template-columns:1fr}.inventory-item-values{font-size:9px}.inventory-section-heading>span{font-size:8px}.attunement-slots{gap:5px}}
