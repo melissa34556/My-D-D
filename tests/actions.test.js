@@ -67,3 +67,8 @@ test("Spell attacks are not duplicated and cantrip beams scale by total characte
  assert.equal(beams.length,1);
  assert.equal(beams[0].damage,"3d10");
 });
+
+test("Database feature entries merge with built-in class rules without duplicate actions",()=>{
+ const c=buildActionSections({className:"Rogue",level:3,subclass:"Thief",abilities:{STR:10,DEX:16},proficiencyBonus:2,features:[],contentEntries:[{id:"cunning",name:"Cunning Action",category:"Classes",description:"Database version.",source:"Rules data",actionData:{actionType:"Bonus Action",className:"Rogue",requiredLevel:2}}]});
+ assert.equal(c.bonusActions.filter(x=>x.name==="Cunning Action").length,1);
+});
