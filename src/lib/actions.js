@@ -29,7 +29,16 @@ export function buildActionSections(c){
  const featureDescription=name=>features.find(f=>text(f.name)===text(name))?.description||"";
  const attacks=[...(c.attacks||[])].map((a,i)=>({...a,id:a.id||"stored-"+i,source:a.source||"Character attack",kind:a.kind||(/spell/i.test(a.type||"")?"Spell":/ranged/i.test(a.type||"")?"Ranged Weapon":"Melee Weapon")}));
  const equippedWeapons=(c.inventory||[]).filter(x=>x.equipped&&x.actionData?.weapon&&x.actionData?.damage);
- for(const item of equippedWeapons){const d=item.actionData||{};if(attacks.some(a=>text(a.name)===text(item.name)))continue;const ability=String(d.ability||"").toUpperCase();const score=ability?mod(c.abilities?.[ability]):/ranged/i.test(d.weaponCategory||"")?mod(c.abilities?.DEX):/finesse/i.test(String(d.properties))?Math.max(mod(c.abilities?.DEX),mod(c.abilities?.STR)):mod(c.abilities?.STR);const prof=d.proficient===false?0:Number(c.proficiencyBonus)||2;attacks.push({id:"inventory-"+(item.id||item.name),name:item.name,kind:d.weaponCategory||"Melee Weapon",range:d.range||"5 ft.",attackBonus:Number(d.attackBonus??(score+prof)),damage:d.damage,damageModifier:Number(d.damageModifier??score),damageType:d.damageType||"",source:"Equipped inventory",description:item.description||"",properties:d.properties||""});}
+ for(const item of equippedWeapons){const d=item.actionData||{};if(attacks.some(a=>text(a.name)===text(item.name)))continue;const ability=String(d.ability||"").toUpperCase();const score=ability?mod(c.abilities?.[ability]):/ranged/i.test(d.weaponCategory||"")?mod(c.abilities?.DEX):/finesse/i.test(String(d.properties))?Math.max(mod(c.abilities?.DEX),mod(c.abilities?.STR)):mod(c.abilities?.STR);const proficiencies=(c.weaponProficiencies||[]).map(text);
+ const weaponName=text(item.name),weaponClass=text(d.weaponCategory||"");
+ const classNames=Object.keys(classLevels).map(text);
+ const martial=["barbarian","fighter","paladin","ranger"].some(x=>classNames.includes(x));
+ const simple=["barbarian","bard","cleric","druid","fighter","monk","paladin","ranger","rogue","warlock"].some(x=>classNames.includes(x));
+ const limited=["dagger","dart","sling","quarterstaff","light crossbow"].some(x=>weaponName.includes(x));
+ const selected=["hand crossbow","longsword","rapier","shortsword"].some(x=>weaponName.includes(x));
+ const inferredProficiency=proficiencies.includes(weaponName)||proficiencies.includes(weaponClass)||(weaponClass.includes("martial")&&martial)||(weaponClass.includes("simple")&&simple)||((classNames.includes("bard")||classNames.includes("rogue"))&&selected)||(classNames.some(x=>["sorcerer","wizard"].includes(x))&&limited)||(classNames.includes("monk")&&weaponName.includes("shortsword"));
+ const proficient=d.proficient===true?true:d.proficient===false?false:inferredProficiency;
+ const prof=proficient?(Number(c.proficiencyBonus)||2):0;attacks.push({id:"inventory-"+(item.id||item.name),name:item.name,kind:d.weaponCategory||"Melee Weapon",range:d.range||"5 ft.",attackBonus:Number(d.attackBonus??(score+prof)),damage:d.damage,damageModifier:Number(d.damageModifier??score),damageType:d.damageType||"",source:"Equipped inventory",description:item.description||"",properties:d.properties||""});}
  const contentEntries=c.contentEntries||[];
  const actionTypeOf=entry=>String(entry.actionData?.actionType||entry.actionData?.activation||"").toLowerCase();
  const eligible=entry=>{
@@ -38,7 +47,7 @@ export function buildActionSections(c){
   if(sub&&!Object.values(c.subclassesByClass||{}).some(x=>text(x)===text(sub))&&text(c.subclass)!==text(sub))return false;
   if(species&&text(c.species)!==text(species))return false;
   if(feat&&!features.some(x=>text(x.name||x)===text(feat)))return false;
-  const required=Number(d.requiredLevel||entry.level||0);
+  const required=Number(d.requiredLevel||(entry.category==="Classes"?entry.level:0)||0);
   if(required&&cls&&Number(classLevels[Object.keys(classLevels).find(x=>text(x)===text(cls))]||0)<required)return false;
   if(required&&!cls&&Number(c.level||1)<required)return false;
   return true;
