@@ -168,6 +168,15 @@ function Inventory({items=[],change,open,dexterity=10,strength=10,applyAC,curren
    <label className="inventory-check"><input type="checkbox" checked={!!it.equipped} onChange={e=>update(it.id,{equipped:e.target.checked})}/> Equipped</label>
    <label className="inventory-check"><input type="checkbox" checked={!!it.attuned} disabled={!it.attuned&&attunedItems.length>=3} onChange={e=>update(it.id,{attuned:e.target.checked})}/> Attuned</label>
    <label className="inventory-check"><input type="checkbox" checked={!!it.isShield} onChange={e=>update(it.id,{isShield:e.target.checked,category:e.target.checked?"Shield":it.category})}/> Shield (+2 AC)</label>
+   <label className="inventory-check"><input type="checkbox" checked={!!it.actionData?.weapon} onChange={e=>update(it.id,{actionData:{...it.actionData,weapon:e.target.checked}})}/> Add to Actions as weapon</label>
+   {it.actionData?.weapon&&<>
+    <label>Damage dice<input value={it.actionData.damage||""} placeholder="1d8" onChange={e=>update(it.id,{actionData:{...it.actionData,damage:e.target.value}})}/></label>
+    <label>Damage type<input value={it.actionData.damageType||""} placeholder="Slashing" onChange={e=>update(it.id,{actionData:{...it.actionData,damageType:e.target.value}})}/></label>
+    <label>Weapon category<select value={it.actionData.weaponCategory||"Melee Weapon"} onChange={e=>update(it.id,{actionData:{...it.actionData,weaponCategory:e.target.value}})}><option>Melee Weapon</option><option>Ranged Weapon</option><option>Simple Weapon</option><option>Martial Weapon</option></select></label>
+    <label>Range<input value={it.actionData.range||""} placeholder="5 ft." onChange={e=>update(it.id,{actionData:{...it.actionData,range:e.target.value}})}/></label>
+    <label>Properties<input value={it.actionData.properties||""} placeholder="Finesse, versatile" onChange={e=>update(it.id,{actionData:{...it.actionData,properties:e.target.value}})}/></label>
+    <label>Attack ability<select value={it.actionData.ability||""} onChange={e=>update(it.id,{actionData:{...it.actionData,ability:e.target.value}})}><option value="">Auto</option>{["STR","DEX"].map(a=><option key={a}>{a}</option>)}</select></label>
+   </>}
    <label>Armor base AC<input type="number" min="0" max="30" value={it.armorBaseAC??""} placeholder="—" onChange={e=>update(it.id,{armorBaseAC:e.target.value===""?undefined:Number(e.target.value)})}/></label>
    <label>Armor type<select value={it.armorCategory||"light"} onChange={e=>update(it.id,{armorCategory:e.target.value})}><option value="light">Light</option><option value="medium">Medium</option><option value="heavy">Heavy</option></select></label>
    <label>Notes<input value={it.description||""} onChange={e=>update(it.id,{description:e.target.value})}/></label>
