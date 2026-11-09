@@ -22,7 +22,7 @@ function xmlRecords(doc,filename){
   const rawLevel=n.getAttribute("level")||n.getAttribute("spell-level")||direct(n,"level")||direct(n,"spell-level");
   const level=rawLevel!==""&&Number.isFinite(Number(rawLevel))?Number(rawLevel):undefined;
   const key=category+":"+String(name).toLowerCase();if(seen.has(key))continue;seen.add(key);
-  out.push({id:idFor(filename,id,name),name:name.trim(),category,description,source:filename,sourceId:id,kind:n.tagName,...(level!==undefined?{level}:{})});
+  const actionData={actionType:n.getAttribute("action-type")||n.getAttribute("actionType")||n.getAttribute("activation")||"",className:n.getAttribute("class")||n.getAttribute("class-name")||"",subclass:n.getAttribute("subclass")||"",species:n.getAttribute("species")||n.getAttribute("race")||"",feat:n.getAttribute("feat")||"",requiredLevel:n.getAttribute("required-level")||n.getAttribute("class-level")||"",uses:n.getAttribute("uses")||"",recharge:n.getAttribute("recharge")||"",damage:n.getAttribute("damage")||"",damageType:n.getAttribute("damage-type")||"",range:n.getAttribute("range")||"",attackBonus:n.getAttribute("attack-bonus")||"",prerequisite:n.getAttribute("prerequisite")||""};out.push({id:idFor(filename,id,name),name:name.trim(),category,description,source:filename,sourceId:id,kind:n.tagName,...(level!==undefined?{level}:{}),actionData});
  }
  return out;
 }
