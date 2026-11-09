@@ -14,7 +14,7 @@ test("inventory weight counts each item quantity, including contents of containe
  assert.equal(calculateInventoryWeight([{name:"Backpack",weight:5,quantity:1,isContainer:true},{name:"Rope",weight:10,quantity:1,containerId:"pack"},{name:"Rations",weight:2,quantity:3,containerId:"pack"}]),21);
 });
 test("currency converts 2014 coin denominations to gold pieces",()=>{
- assert.equal(currencyInGold({cp:100,sp:10,ep:2,gp:5,pp:1}),17);
+ assert.equal(currencyInGold({cp:100,sp:10,ep:2,gp:5,pp:1}),18);
 });
 test("item value multiplies unit cost by quantity",()=>{
  assert.equal(inventoryItemValue([{cost:2,quantity:3},{cost:0.5,quantity:2}]),7);
