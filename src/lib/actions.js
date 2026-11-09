@@ -41,7 +41,7 @@ export function buildActionSections(c){
  for(const [cls,lvl] of Object.entries(classLevels)){
   const sub=text(subclassFor(cls));
   if(text(cls)==="monk"){
-   add(other,"Unarmed Strike","Melee Attack","You can make an unarmed strike using Strength or Dexterity. On a hit, deal your Martial Arts die + the chosen ability modifier in bludgeoning damage.","Monk",{damage:dieFor(lvl)+"d1",attackBonus:null});
+   add(other,"Unarmed Strike","Melee Attack","You can make an unarmed strike using Strength or Dexterity. On a hit, deal your Martial Arts die + the chosen ability modifier in bludgeoning damage.","Monk",{damage:"1d"+dieFor(lvl)+"+"+Math.max(mod(c.abilities.DEX),mod(c.abilities.STR)),attackBonus:(Number(c.proficiencyBonus)||2)+Math.max(mod(c.abilities.DEX),mod(c.abilities.STR))});
    if(lvl>=2){add(bonus,"Flurry of Blows","Bonus Action","Immediately after you take the Attack action on your turn, you can spend 1 ki point to make two unarmed strikes as a bonus action.","Monk · Ki");add(bonus,"Patient Defense","Bonus Action","You can spend 1 ki point to take the Dodge action as a bonus action.","Monk · Ki");add(bonus,"Step of the Wind","Bonus Action","You can spend 1 ki point to take the Disengage or Dash action as a bonus action, and your jump distance is doubled for the turn.","Monk · Ki");}
    if(lvl>=3){add(reactions,"Deflect Missiles","Reaction","Use your reaction to reduce damage from a ranged weapon attack. If you reduce it to 0, you can catch the missile; spending 1 ki point lets you make a ranged attack with it.","Monk");}
    if(lvl>=3&&sub.includes("open hand")){add(bonus,"Open Hand Technique","Feature","When you hit with one of the attacks granted by Flurry of Blows, you can impose one of the Open Hand Technique effects.","Way of the Open Hand");}
@@ -77,7 +77,7 @@ export function buildActionSections(c){
   else continue;
   add(target,f.name,type,f.description||"Character feature. Consult the feature rules for its exact use and limitations.","Character feature");
  }
- const actionCount=Object.entries(classLevels).reduce((n,[cls,lvl])=>n+((["fighter","ranger","paladin","barbarian","monk"].includes(text(cls))&&lvl>=5)?1:0),0);
+ const actionCount=Object.entries(classLevels).some(([cls,lvl])=>["fighter","ranger","paladin","barbarian","monk"].includes(text(cls))&&lvl>=5)?1:0;
  const hasExtra=features.some(f=>/extra attack/i.test(f.name));
  const attacksPerAction=1+Math.max(0,actionCount||((hasExtra||hasFeature("Extra Attack"))?1:0));
  return {attacks,actions,bonusActions:bonus,reactions,other,attacksPerAction,totalLevel,spells};
