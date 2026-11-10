@@ -72,3 +72,15 @@ test("Database feature entries merge with built-in class rules without duplicate
  const c=buildActionSections({className:"Rogue",level:3,subclass:"Thief",abilities:{STR:10,DEX:16},proficiencyBonus:2,features:[],contentEntries:[{id:"cunning",name:"Cunning Action",category:"Classes",description:"Database version.",source:"Rules data",actionData:{actionType:"Bonus Action",className:"Rogue",requiredLevel:2}}]});
  assert.equal(c.bonusActions.filter(x=>x.name==="Cunning Action").length,1);
 });
+
+test("standard catalog weapons flow into Actions only when equipped",()=>{
+ const catalogWeapon={id:"longbow",name:"Longbow",equipped:true,actionData:{weapon:true,weaponCategory:"Martial Weapon",damage:"1d8",damageType:"piercing",range:"150/600 ft.",properties:"Ammunition, heavy, two-handed",ability:"DEX"}};
+ const c=buildActionSections({className:"Ranger",level:5,abilities:{STR:10,DEX:18},proficiencyBonus:3,features:[],inventory:[catalogWeapon]});
+ const longbow=c.attacks.find(x=>x.name==="Longbow");
+ assert.ok(longbow);
+ assert.equal(longbow.attackBonus,7);
+ assert.equal(longbow.damage,"1d8");
+ assert.equal(longbow.range,"150/600 ft.");
+ const unequipped=buildActionSections({className:"Ranger",level:5,abilities:{STR:10,DEX:18},proficiencyBonus:3,features:[],inventory:[{...catalogWeapon,equipped:false}]});
+ assert.ok(!unequipped.attacks.some(x=>x.name==="Longbow"));
+});
