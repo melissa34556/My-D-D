@@ -9,7 +9,7 @@ test("unarmored AC uses 10 plus Dexterity",()=>assert.equal(calculateArmorClass(
 test("2014 carrying capacity is 15 times Strength",()=>assert.deepEqual(calculateCarryingCapacity(12),{normal:180,pushDragLift:360}));
 test("encumbrance uses 5x and 10x Strength thresholds",()=>{assert.equal(getEncumbrance(51,10).lightlyEncumbered,true);assert.equal(getEncumbrance(101,10).heavilyEncumbered,true);assert.equal(getEncumbrance(160,10).overCapacity,true);});
 
-import {calculateInventoryWeight,currencyInGold,inventoryItemValue} from "../src/lib/equipment.js";
+import {calculateInventoryWeight,calculateCurrencyWeight,currencyInGold,inventoryItemValue} from "../src/lib/equipment.js";
 test("inventory weight counts each item quantity, including contents of containers",()=>{
  assert.equal(calculateInventoryWeight([{name:"Backpack",weight:5,quantity:1,isContainer:true},{name:"Rope",weight:10,quantity:1,containerId:"pack"},{name:"Rations",weight:2,quantity:3,containerId:"pack"}]),21);
 });
@@ -25,4 +25,9 @@ test("magic shield bonus stacks with the shield's +2 AC",()=>{
 });
 test("magic armor bonus is included independently of shield bonus",()=>{
  assert.equal(calculateArmorClass({dexterity:14,armor:{baseAC:14,category:"medium"},shield:true,magicBonus:1,shieldMagicBonus:2}),20);
+});
+
+test("carried currency weighs one pound per 50 coins",()=>{
+ assert.equal(calculateCurrencyWeight({cp:50,sp:25,gp:25}),2);
+ assert.equal(calculateCurrencyWeight({cp:-10,gp:10}),0.2);
 });
