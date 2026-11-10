@@ -439,3 +439,12 @@
 .inventory-add-panel .inventory-add{grid-template-columns:repeat(2,minmax(0,1fr))}
 .inventory-add-panel .inventory-add input,.inventory-add-panel .inventory-add select{min-height:38px}
 @media(max-width:420px){.inventory-add-panel .inventory-add{grid-template-columns:1fr}}
+
+
+/* Inventory rule feedback and preset picker */
+.inventory-capacity-warning{display:block;color:#e2a04c;font-size:11px;margin-top:4px}
+.inventory-capacity-ok{display:block;color:#8eaf9c;font-size:11px;margin:5px 0 5px 31px}
+.inventory-add-panel .inventory-add>select:first-child{grid-column:1/-1}
+.inventory-add-panel .inventory-add>button{min-height:40px}
+.inventory-item-controls label{min-width:0}
+.inventory-item-controls input,.inventory-item-controls select{max-width:100%}
