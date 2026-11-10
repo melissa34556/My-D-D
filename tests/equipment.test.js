@@ -19,3 +19,10 @@ test("currency converts 2014 coin denominations to gold pieces",()=>{
 test("item value multiplies unit cost by quantity",()=>{
  assert.equal(inventoryItemValue([{cost:2,quantity:3},{cost:0.5,quantity:2}]),7);
 });
+
+test("magic shield bonus stacks with the shield's +2 AC",()=>{
+ assert.equal(calculateArmorClass({dexterity:14,armor:{baseAC:14,category:"medium"},shield:true,shieldMagicBonus:1}),19);
+});
+test("magic armor bonus is included independently of shield bonus",()=>{
+ assert.equal(calculateArmorClass({dexterity:14,armor:{baseAC:14,category:"medium"},shield:true,magicBonus:1,shieldMagicBonus:2}),20);
+});
