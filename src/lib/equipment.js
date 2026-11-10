@@ -25,3 +25,8 @@ export function currencyInGold(currency={}){
 export function inventoryItemValue(items=[]){
  return (Array.isArray(items)?items:[]).reduce((total,item)=>total+Math.max(0,Number(item?.cost)||0)*Math.max(0,Number(item?.quantity??item?.qty??1)||0),0);
 }
+
+export function calculateCurrencyWeight(currency={}) {
+ const coins=["cp","sp","ep","gp","pp"].reduce((sum,key)=>sum+Math.max(0,Number(currency?.[key])||0),0);
+ return coins/50;
+}
