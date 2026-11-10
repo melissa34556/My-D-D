@@ -203,7 +203,8 @@ function Inventory({items=[],change,open,dexterity=10,strength=10,applyAC,curren
   <div className="equipment-derived"><div><b>Calculated AC: {derivedAC}</b><small>{equippedArmor?equippedArmor.name:"Unarmored"}{hasShield?" + shield":""} · DEX {dexterity>=10?"+":""}{Math.floor((Number(dexterity)-10)/2)}</small>
    {equippedArmor?.strengthRequirement>strength&&<small className="inventory-capacity-warning">Armor strength requirement not met ({equippedArmor.strengthRequirement} STR)</small>}
    {equippedArmor?.stealthDisadvantage&&<small className="inventory-capacity-warning">Disadvantage on Stealth checks from armor</small>}
-   {normalized.filter(x=>x.equipped&&Number(x.armorBaseAC)>0).length>1&&<small className="inventory-capacity-warning">Multiple armor items equipped; only the first is used for AC</small>}\n   {shieldItems.length>1&&<small className="inventory-capacity-warning">Multiple shields equipped; only one shield bonus is applied</small>}
+   {normalized.filter(x=>x.equipped&&Number(x.armorBaseAC)>0).length>1&&<small className="inventory-capacity-warning">Multiple armor items equipped; only the first is used for AC</small>}
+   {shieldItems.length>1&&<small className="inventory-capacity-warning">Multiple shields equipped; only one shield bonus is applied</small>}
   </div><button onClick={()=>applyAC(derivedAC)}>Apply AC</button></div>
   <div className="inventory-capacity"><span>Carrying capacity</span><b>{totalWeight.toFixed(1)} / {encumbrance.capacity} lb</b><div><i style={{width:Math.min(100,totalWeight/Math.max(1,encumbrance.capacity)*100)+"%"}}/></div><small>Normal capacity is STR × 15 lb. Variant encumbrance thresholds are shown as a reminder.</small></div>
   <section className="inventory-add-panel"><h3>MANAGE INVENTORY · ADD ITEM</h3><div className="inventory-add">
