@@ -144,7 +144,7 @@ function Inventory({items=[],change,open,dexterity=10,strength=10,applyAC,curren
  const currencyGP=currencyInGold(currency);
  const encumbrance=getEncumbrance(totalWeight,strength);
  const equippedArmor=normalized.find(x=>x.equipped&&Number(x.armorBaseAC)>0);
- const shieldItems=normalized.filter(x=>x.equipped&&(x.isShield||x.category==="Shield"));
+ const shieldItems=normalized.filter(x=>x.equipped&&(x.isShield||(x.category==="Shield"&&x.isShield!==false)));
  const hasShield=shieldItems.length>0;
  const shieldMagicBonus=shieldItems.reduce((sum,item)=>sum+(Number(item.magicBonus)||0),0);
  const derivedAC=calculateArmorClass({dexterity,armor:equippedArmor?{baseAC:Number(equippedArmor.armorBaseAC),category:equippedArmor.armorCategory||"light"}:null,shield:hasShield,magicBonus:Number(equippedArmor?.magicBonus)||0,shieldMagicBonus});
@@ -171,7 +171,7 @@ function Inventory({items=[],change,open,dexterity=10,strength=10,applyAC,curren
    <label className="inventory-check"><input type="checkbox" checked={!!it.isContainer} onChange={e=>update(it.id,{isContainer:e.target.checked,containerId:e.target.checked?"":it.containerId})}/> Container</label>
    <label className="inventory-check"><input type="checkbox" checked={!!it.equipped} onChange={e=>update(it.id,{equipped:e.target.checked})}/> Equipped</label>
    <label className="inventory-check"><input type="checkbox" checked={!!it.magicItem} onChange={e=>update(it.id,{magicItem:e.target.checked})}/> Magic item</label>
-   <label className="inventory-check"><input type="checkbox" checked={!!it.requiresAttunement} onChange={e=>update(it.id,{requiresAttunement:e.target.checked,attuned:e.target.checked?it.attuned:false})}/> Requires attunement</label>
+   <label className="inventory-check"><input type="checkbox" checked={!!it.requiresAttunement} onChange={e=>update(it.id,{requiresAttunement:e.target.checked,magicItem:e.target.checked?true:it.magicItem,attuned:e.target.checked?it.attuned:false})}/> Requires attunement</label>
    <label className="inventory-check"><input type="checkbox" checked={!!it.attuned} disabled={(!it.requiresAttunement&&!it.attuned)||(!it.attuned&&attunedItems.length>=3)} onChange={e=>update(it.id,{attuned:e.target.checked})}/> Attuned</label>
    {it.isContainer&&<label>Content capacity (lb)<input type="number" min="0" step="0.5" value={it.maxContentWeightLb??""} placeholder="No limit set" onChange={e=>update(it.id,{maxContentWeightLb:e.target.value===""?undefined:Math.max(0,Number(e.target.value)||0)})}/></label>}
    <label className="inventory-check"><input type="checkbox" checked={!!it.isShield} onChange={e=>update(it.id,{isShield:e.target.checked,category:e.target.checked?"Shield":it.category})}/> Shield (+2 AC)</label>
